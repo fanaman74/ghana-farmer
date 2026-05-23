@@ -129,6 +129,16 @@ export function getFarms(userId) {
 }
 
 /**
+ * Retrieves a single farm by its ID.
+ * @param {number} farmId 
+ * @returns {object|undefined}
+ */
+export function getFarm(farmId) {
+  ensureDb();
+  return db.prepare('SELECT * FROM farms WHERE id = ?').get(farmId);
+}
+
+/**
  * Deletes a farm from the database.
  * @param {number} farmId 
  */

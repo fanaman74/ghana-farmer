@@ -99,6 +99,63 @@ test('Express API Integration Tests', async (t) => {
     assert.equal(postDelFarms.length, 0);
   });
 
+  await t.test('GET /api/farms/:id/weather - Fetch & Cache Weather', async () => {
+    // 1. Create a dummy farm for weather testing
+    const farmGeoJson = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[ -0.2059, 5.6148 ], [ -0.2050, 5.6148 ], [ -0.2050, 5.6140 ], [ -0.2059, 5.6148 ]]]
+      }
+    };
+    const postRes = await fetch(`${API_BASE}/api/farms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: defaultUser.id,
+        name: 'Weather Test Farm',
+        geometry: JSON.stringify(farmGeoJson)
+      })
+    });
+    const farm = await postRes.json();
+
+    // 2. Fetch weather for the farm (first hit - queries network)
+    const weatherRes = await fetch(`${API_BASE}/api/farms/${farm.id}/weather`);
+    assert.equal(weatherRes.status, 200);
+    const weatherData = await weatherRes.json();
+    
+    assert.ok(weatherData.daily, 'Should contain daily weather payload');
+    assert.ok(weatherData.hourly, 'Should contain hourly weather payload');
+    
+    // 3. Fetch weather again (second hit - MUST serve from SQLite cache instantly)
+    const start = Date.now();
+    const weatherCachedRes = await fetch(`${API_BASE}/api/farms/${farm.id}/weather`);
+    const duration = Date.now() - start;
+    
+    assert.equal(weatherCachedRes.status, 200);
+    const weatherCachedData = await weatherCachedRes.json();
+    assert.deepEqual(weatherCachedData.daily, weatherData.daily, 'Cached weather daily payload should match exactly');
+    assert.ok(duration < 50, 'Cached read should be served in under 50ms from local SQLite');
+  });
+
+  await t.test('GET /api/faostat/:crop - Fetch & Cache FAOSTAT yields', async () => {
+    // 1. Query maize stats (first hit - network)
+    const cropRes = await fetch(`${API_BASE}/api/faostat/maize`);
+    assert.equal(cropRes.status, 200);
+    const cropData = await cropRes.json();
+    assert.ok(Array.isArray(cropData), 'FAOSTAT payload should be an array of crop stats');
+    
+    // 2. Query maize stats again (second hit - cache)
+    const start = Date.now();
+    const cropCachedRes = await fetch(`${API_BASE}/api/faostat/maize`);
+    const duration = Date.now() - start;
+    
+    assert.equal(cropCachedRes.status, 200);
+    const cropCachedData = await cropCachedRes.json();
+    assert.deepEqual(cropCachedData, cropData, 'Cached crop data should match exactly');
+    assert.ok(duration < 50, 'Cached read should be served in under 50ms from local SQLite');
+  });
+
   // Teardown: close Express server and delete test db
   server.close(() => {
     try {
