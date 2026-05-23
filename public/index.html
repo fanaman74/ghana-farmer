@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghana Farmer Support Dashboard</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Modern Leaflet Geoman (Drawing Tools) CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
+  
+  <!-- Main Premium CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f2e1e">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-icon">🌱</div>
+        <h1 id="lbl-title">Ghana Farmer Support</h1>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Online/Offline Badge -->
+        <div id="connection-badge" class="badge online">
+          <span class="badge-dot"></span>
+          <span id="lbl-status-online">Online</span>
+        </div>
+        
+        <!-- Language Switcher -->
+        <div class="lang-selector">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="ak">TWI</button>
+          <button class="lang-btn" data-lang="ee">EWE</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="app-body">
+      <!-- Sidebar Pane -->
+      <aside class="sidebar">
+        <!-- User Profile Switcher -->
+        <section class="card profile-card">
+          <h2 id="lbl-user-profile">Farmer Profile</h2>
+          <div class="profile-select-container">
+            <select id="user-select" class="form-select">
+              <option value="" id="lbl-select-profile">-- Select Profile --</option>
+            </select>
+          </div>
+          
+          <div class="create-user-container">
+            <input type="text" id="username-input" class="form-input" placeholder="New Farmer Name...">
+            <button id="btn-create-user" class="btn btn-primary">Create</button>
+          </div>
+        </section>
+
+        <!-- Saved Farms List -->
+        <section class="card farms-card">
+          <h2 id="lbl-my-farms">My Farms</h2>
+          <div id="farms-list" class="farms-list">
+            <div class="no-farms" id="lbl-no-farms">No saved farms yet. Draw one on the map!</div>
+          </div>
+          
+          <div class="draw-controls">
+            <button id="btn-draw-farm" class="btn btn-accent full-width">
+              <span class="icon">✏️</span> <span id="lbl-draw-field">Draw New Farm</span>
+            </button>
+            <div id="draw-instructions" class="draw-instructions hidden">
+              <p id="lbl-draw-help">Click on the map to draw boundaries. Click first point again to close polygon.</p>
+            </div>
+            <div id="save-farm-container" class="save-farm-container hidden">
+              <input type="text" id="farm-name-input" class="form-input" placeholder="Farm Name...">
+              <button id="btn-save-farm" class="btn btn-success full-width">Save Farm</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Center Map Pane -->
+      <section class="map-pane">
+        <div id="map" class="map-container"></div>
+      </section>
+
+      <!-- Right Analytics Pane -->
+      <aside class="analytics-pane">
+        <!-- Overview Card -->
+        <section class="card overview-card">
+          <h2 id="lbl-farm-overview">Farm Overview</h2>
+          <div id="overview-content">
+            <p class="select-hint" id="lbl-select-farm-hint">Select a farm on the left or map to view details.</p>
+          </div>
+        </section>
+
+        <!-- Weather and Soil Forecast Card -->
+        <section class="card weather-card scrollable">
+          <h2 id="lbl-weather-climate">Weather & Climate</h2>
+          <div id="weather-content" class="hidden">
+            <div class="weather-metrics">
+              <div class="metric">
+                <span class="metric-label" id="lbl-soil-moisture">Soil Moisture</span>
+                <span id="val-soil-moisture" class="metric-value">--</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label" id="lbl-evap">Evapotranspiration</span>
+                <span id="val-evap" class="metric-value">--</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="weatherChart"></canvas>
+            </div>
+          </div>
+          <p class="select-hint" id="lbl-select-farm-hint-weather">Select a farm to view weather.</p>
+        </section>
+
+        <!-- Vegetation NDVI Health Card -->
+        <section class="card vegetation-card scrollable">
+          <h2 id="lbl-crop-health">Crop Health (NDVI)</h2>
+          <div id="ndvi-content" class="hidden">
+            <!-- NDVI Health Gauge -->
+            <div class="ndvi-gauge-container">
+              <div class="ndvi-slider-track">
+                <div id="ndvi-gauge-indicator" class="ndvi-slider-indicator"></div>
+              </div>
+              <div class="ndvi-gauge-labels">
+                <span>0.0 (Bare)</span>
+                <span class="val-active-ndvi">NDVI: <strong id="val-ndvi">--</strong></span>
+                <span>1.0 (Healthy)</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="ndviChart"></canvas>
+            </div>
+          </div>
+          <p class="select-hint" id="lbl-select-farm-hint-ndvi">Select a farm to view NDVI health.</p>
+        </section>
+
+        <!-- FAOSTAT Historical Benchmarks Card -->
+        <section class="card benchmark-card scrollable">
+          <h2 id="lbl-yield-benchmarks">Ghana Yield Benchmarks</h2>
+          <div class="benchmark-controls">
+            <select id="crop-select" class="form-select">
+              <option value="maize">Maize (Aburo)</option>
+              <option value="rice">Rice (Emo)</option>
+              <option value="cassava">Cassava (Bankye)</option>
+              <option value="cocoa">Cocoa (Kokoo)</option>
+            </select>
+          </div>
+          <div class="chart-container">
+            <canvas id="benchmarkChart"></canvas>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Modern Leaflet Geoman JS -->
+  <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Application JS Modules -->
+  <script src="js/i18n.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered successfully'))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+/* ==========================================================================
+   Ghana Farmer Support App - Modern Design Tokens & CSS Variables
+   ========================================================================== */
+:root {
+  /* Harmonized Color Palette */
+  --bg-app: #080b09;
+  --bg-sidebar: rgba(15, 23, 20, 0.65);
+  --bg-card: rgba(22, 34, 28, 0.45);
+  --bg-card-hover: rgba(30, 48, 38, 0.6);
+  
+  --border-glow: rgba(16, 185, 129, 0.15);
+  --border-glow-hover: rgba(16, 185, 129, 0.35);
+  --border-muted: rgba(255, 255, 255, 0.06);
+  
+  --color-primary: #10b981; /* Emerald */
+  --color-primary-hover: #059669;
+  --color-accent: #84cc16; /* Lime */
+  --color-accent-hover: #65a30d;
+  --color-success: #22c55e; /* Green */
+  --color-success-hover: #16a34a;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-dark: #1f2937;
+  
+  /* Fonts */
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Sizing / Layout spacing */
+  --header-height: 70px;
+  --sidebar-width: 300px;
+  --analytics-width: 400px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --glass-blur: blur(14px);
+}
+
+/* ==========================================================================
+   Base Elements Reset & Layout Setup
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ==========================================================================
+   Premium Header Styles
+   ========================================================================== */
+.app-header {
+  height: var(--header-height);
+  background: rgba(10, 14, 12, 0.85);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 1000;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 28px;
+  animation: pulse-slow 3s infinite ease-in-out;
+}
+
+.header-logo h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Online status indicator */
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.badge.online {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--color-success);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.badge.offline {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* i18n Language Toggle Buttons */
+.lang-selector {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-muted);
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: var(--transition);
+}
+
+.lang-btn:hover {
+  color: var(--text-main);
+}
+
+.lang-btn.active {
+  background: var(--color-primary);
+  color: var(--text-dark);
+}
+
+/* ==========================================================================
+   Full Grid App Workspace Body
+   ========================================================================== */
+.app-body {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr var(--analytics-width);
+  height: calc(100vh - var(--header-height));
+  position: relative;
+}
+
+/* Common Card Panel Styling (Glassmorphism) */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow-hover);
+  box-shadow: 0 12px 40px 0 rgba(16, 185, 129, 0.08);
+}
+
+.card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--color-accent);
+  letter-spacing: 0.25px;
+  text-transform: uppercase;
+  border-left: 3px solid var(--color-primary);
+  padding-left: 10px;
+}
+
+/* ==========================================================================
+   Sidebar Details & Inputs
+   ========================================================================== */
+.sidebar {
+  background: rgba(8, 12, 10, 0.9);
+  border-right: 1px solid var(--border-muted);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+/* Form Styles */
+.form-select, .form-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-muted);
+  color: var(--text-main);
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: var(--font-family);
+  transition: var(--transition);
+}
+
+.form-select:focus, .form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.create-user-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-family);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--text-dark);
+}
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn-accent {
+  background: var(--color-accent);
+  color: var(--text-dark);
+}
+.btn-accent:hover {
+  background: var(--color-accent-hover);
+}
+
+.btn-success {
+  background: var(--color-success);
+  color: var(--text-main);
+}
+.btn-success:hover {
+  background: var(--color-success-hover);
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.btn-danger:hover {
+  background: var(--color-danger);
+  color: var(--text-main);
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Saved Farms List Item Styles */
+.farms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.no-farms {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 24px 0;
+  line-height: 1.5;
+}
+
+.farm-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-muted);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.farm-item:hover {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.farm-item.active {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--color-primary);
+}
+
+.farm-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.farm-item-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.farm-item-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.draw-controls {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.draw-instructions {
+  background: rgba(132, 204, 22, 0.08);
+  border: 1px solid rgba(132, 204, 22, 0.15);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--color-accent);
+  line-height: 1.4;
+}
+
+.save-farm-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: slide-in 0.3s ease-out;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Center Map Panel
+   ========================================================================== */
+.map-pane {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.map-container {
+  height: 100%;
+  width: 100%;
+  background: #0d120f;
+}
+
+/* Style overrides for Leaflet elements to blend with dark dashboard theme */
+.leaflet-bar a {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-muted) !important;
+  backdrop-filter: var(--glass-blur);
+  transition: var(--transition);
+}
+
+.leaflet-bar a:hover {
+  background-color: var(--color-primary) !important;
+  color: var(--text-dark) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--border-glow) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-card) !important;
+}
+
+/* ==========================================================================
+   Right Side Analytics Panel
+   ========================================================================== */
+.analytics-pane {
+  background: rgba(8, 12, 10, 0.9);
+  border-left: 1px solid var(--border-muted);
+  padding: 20px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.scrollable {
+  max-height: 380px;
+}
+
+.chart-container {
+  position: relative;
+  height: 180px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.select-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 30px 0;
+  font-style: italic;
+}
+
+/* Farm Metadata Properties List */
+.farm-props {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.farm-prop-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-muted);
+}
+
+.farm-prop-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.farm-prop-value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Weather & Climate layout metrics */
+.weather-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.metric {
+  background: rgba(16, 185, 129, 0.04);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-glow);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* NDVI Slider Gauge Visuals */
+.ndvi-gauge-container {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-muted);
+}
+
+.ndvi-slider-track {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #ef4444 0%, #eab308 50%, #22c55e 100%);
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.ndvi-slider-indicator {
+  width: 14px;
+  height: 14px;
+  background-color: #ffffff;
+  border: 2px solid var(--bg-app);
+  border-radius: 50%;
+  position: absolute;
+  top: -3px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  transition: left 0.4s ease-out;
+}
+
+.ndvi-gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.val-active-ndvi {
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.val-active-ndvi strong {
+  color: var(--color-accent);
+}
+
+.benchmark-controls {
+  margin-bottom: 8px;
+}
+
+/* ==========================================================================
+   Animations & Responsive media queries
+   ========================================================================== */
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes slide-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.35);
+}
+
+/* Mobile responsive collapsing grids */
+@media (max-width: 1200px) {
+  .app-body {
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .analytics-pane {
+    grid-column: 1 / span 2;
+    border-left: none;
+    border-top: 1px solid var(--border-muted);
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .analytics-pane .card {
+    flex: 1 1 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 400px auto;
+  }
+  .sidebar {
+    grid-column: 1;
+    border-right: none;
+    border-bottom: 1px solid var(--border-muted);
+    max-height: 250px;
+  }
+  .map-pane {
+    height: 400px;
+  }
+  .analytics-pane {
+    grid-column: 1;
+    flex-direction: column;
+    max-height: none;
+  }
+}
