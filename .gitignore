@@ -1,0 +1,13 @@
+# Dependency directories
+node_modules/
+
+# Local env files
+.env
+.env.local
+
+# Database file
+data/*.db
+data/
+
+# OS metadata
+.DS_Store
