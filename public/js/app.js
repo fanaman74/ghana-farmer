@@ -181,18 +181,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-header-home').addEventListener('click', () => navigateToView('home'));
   document.getElementById('btn-back-home').addEventListener('click', () => navigateToView('home'));
 
-  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard', 'ndvi'));
-  document.getElementById('btn-go-ndvi').addEventListener('click', () => navigateToView('dashboard', 'ndvi'));
-  document.getElementById('btn-go-yield').addEventListener('click', () => navigateToView('dashboard', 'yield'));
-  document.getElementById('btn-go-advisor').addEventListener('click', () => navigateToView('dashboard', 'advisor'));
-
-  // Map driven tabs navigation click triggers
-  document.querySelectorAll('.map-tab-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const tab = e.currentTarget.getAttribute('data-tab');
-      activateTabPane(tab);
-    });
-  });
+  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard'));
+  document.getElementById('btn-go-ndvi').addEventListener('click', () => navigateToView('dashboard'));
+  document.getElementById('btn-go-yield').addEventListener('click', () => navigateToView('dashboard'));
+  document.getElementById('btn-go-advisor').addEventListener('click', () => navigateToView('dashboard'));
 
   // Ghana location search triggers
   const searchInput = document.getElementById('map-search-input');
@@ -468,9 +460,13 @@ async function handleFarmSelection(farm) {
   // Force Leaflet map resize re-calculation due to shrunken dimensions
   invalidateMapSize();
 
-  // Trigger cache proxies ingestion
+  // Trigger cache proxies ingestion for all aggregated dossiers
   await fetchWeather(farm.id);
   await fetchNDVI(farm.id);
+  
+  // Load standard yield benchmark matching crop selector
+  const crop = document.getElementById('crop-select').value;
+  await loadFAOSTATBenchmarks(crop);
 }
 
 function updateFarmDetailsCard(farm) {
@@ -720,9 +716,8 @@ function updateNetworkStatus() {
  * Transitions layout states between Home screen and Dashboard map view.
  * Integrates native SPA View Transitions API if supported.
  * @param {string} viewName - 'home' | 'dashboard'
- * @param {string} preselectedTab - active feature tab to pre-load
  */
-function navigateToView(viewName, preselectedTab = 'ndvi') {
+function navigateToView(viewName) {
   const updateDOM = () => {
     const homeView = document.getElementById('home-view');
     const dashboardView = document.getElementById('dashboard-view');
@@ -741,9 +736,6 @@ function navigateToView(viewName, preselectedTab = 'ndvi') {
       setTimeout(() => {
         invalidateMapSize();
       }, 80);
-
-      // Pre-activate the matching analytics tab
-      activateTabPane(preselectedTab);
     }
   };
 
@@ -751,36 +743,6 @@ function navigateToView(viewName, preselectedTab = 'ndvi') {
     document.startViewTransition(() => updateDOM());
   } else {
     updateDOM();
-  }
-}
-
-/**
- * Activates / displays only the selected analytics tab on the right sidebar panel.
- * @param {string} tabName - 'weather' | 'ndvi' | 'yield' | 'advisor'
- */
-function activateTabPane(tabName) {
-  // Highlight active driving map tab button
-  document.querySelectorAll('.map-tab-btn').forEach(btn => {
-    if (btn.getAttribute('data-tab') === tabName) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
-
-  // Display only the relevant card in the right sidebar
-  document.querySelectorAll('.analytics-pane .card[data-tab]').forEach(card => {
-    if (card.getAttribute('data-tab') === tabName) {
-      card.classList.add('active-tab-pane');
-    } else {
-      card.classList.remove('active-tab-pane');
-    }
-  });
-
-  // Force chart refresh or API fetch triggers for the newly loaded view
-  if (activeFarmId) {
-    if (tabName === 'weather') fetchWeather(activeFarmId);
-    if (tabName === 'ndvi') fetchNDVI(activeFarmId);
   }
 }
 
@@ -838,7 +800,6 @@ async function handleMapSearch() {
 
 // Bind to window to allow global trigger calls if needed
 window.navigateToView = navigateToView;
-window.activateTabPane = activateTabPane;
 window.handleMapSearch = handleMapSearch;
 
 /**

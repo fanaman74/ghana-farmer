@@ -152,14 +152,7 @@
 
         <div id="map" class="map-container"></div>
 
-        <!-- Driving Map Navigation Tabs -->
-        <div class="map-nav-tabs">
-          <button class="map-tab-btn active" data-tab="ndvi" id="btn-tab-ndvi">🛰️ Crop Health</button>
-          <button class="map-tab-btn" data-tab="yield" id="btn-tab-yield">📊 Benchmarks</button>
-          <button class="map-tab-btn" data-tab="advisor" id="btn-tab-advisor">🤖 AI Advisor</button>
-        </div>
-
-        <!-- Details below the map (visible after farm selection) -->
+        <!-- Details below the map (aggregated farm dossier, visible after selection) -->
         <div id="map-bottom-details" class="map-bottom-details hidden">
           <!-- Farm Overview Card -->
           <div class="card bottom-card overview-card">
@@ -189,51 +182,51 @@
             </div>
             <p class="select-hint" id="lbl-select-farm-hint-weather">Select a farm to view weather.</p>
           </div>
+
+          <!-- Vegetation NDVI Health Card -->
+          <div class="card bottom-card vegetation-card scrollable">
+            <h2 id="lbl-crop-health">Crop Health (NDVI)</h2>
+            <div id="ndvi-content" class="hidden">
+              <!-- NDVI Health Gauge -->
+              <div class="ndvi-gauge-container">
+                <div class="ndvi-slider-track">
+                  <div id="ndvi-gauge-indicator" class="ndvi-slider-indicator"></div>
+                </div>
+                <div class="ndvi-gauge-labels">
+                  <span>0.0 (Bare)</span>
+                  <span class="val-active-ndvi">NDVI: <strong id="val-ndvi">--</strong></span>
+                  <span>1.0 (Healthy)</span>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="ndviChart"></canvas>
+              </div>
+            </div>
+            <p class="select-hint" id="lbl-select-farm-hint-ndvi">Select a farm to view NDVI health.</p>
+          </div>
+
+          <!-- FAOSTAT Historical Benchmarks Card -->
+          <div class="card bottom-card benchmark-card scrollable">
+            <h2 id="lbl-yield-benchmarks">Ghana Yield Benchmarks</h2>
+            <div class="benchmark-controls">
+              <select id="crop-select" class="form-select">
+                <option value="maize">Maize (Aburo)</option>
+                <option value="rice">Rice (Emo)</option>
+                <option value="cassava">Cassava (Bankye)</option>
+                <option value="cocoa">Cocoa (Kokoo)</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="benchmarkChart"></canvas>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- Right Analytics Pane -->
+      <!-- Right Analytics Pane (Wise AI Advisor Console) -->
       <aside class="analytics-pane">
-        <!-- Vegetation NDVI Health Card (Tab-Driven - active by default) -->
-        <section class="card vegetation-card scrollable active-tab-pane" data-tab="ndvi">
-          <h2 id="lbl-crop-health">Crop Health (NDVI)</h2>
-          <div id="ndvi-content" class="hidden">
-            <!-- NDVI Health Gauge -->
-            <div class="ndvi-gauge-container">
-              <div class="ndvi-slider-track">
-                <div id="ndvi-gauge-indicator" class="ndvi-slider-indicator"></div>
-              </div>
-              <div class="ndvi-gauge-labels">
-                <span>0.0 (Bare)</span>
-                <span class="val-active-ndvi">NDVI: <strong id="val-ndvi">--</strong></span>
-                <span>1.0 (Healthy)</span>
-              </div>
-            </div>
-            <div class="chart-container">
-              <canvas id="ndviChart"></canvas>
-            </div>
-          </div>
-          <p class="select-hint" id="lbl-select-farm-hint-ndvi">Select a farm to view NDVI health.</p>
-        </section>
-
-        <!-- FAOSTAT Historical Benchmarks Card (Tab-Driven) -->
-        <section class="card benchmark-card scrollable" data-tab="yield">
-          <h2 id="lbl-yield-benchmarks">Ghana Yield Benchmarks</h2>
-          <div class="benchmark-controls">
-            <select id="crop-select" class="form-select">
-              <option value="maize">Maize (Aburo)</option>
-              <option value="rice">Rice (Emo)</option>
-              <option value="cassava">Cassava (Bankye)</option>
-              <option value="cocoa">Cocoa (Kokoo)</option>
-            </select>
-          </div>
-          <div class="chart-container">
-            <canvas id="benchmarkChart"></canvas>
-          </div>
-        </section>
-
-        <!-- OLMO AI Agricultural Advisor Card (Tab-Driven) -->
-        <section class="card advisor-card scrollable" data-tab="advisor">
+        <!-- OLMO AI Agricultural Advisor Card (Persistent full-height) -->
+        <section class="card advisor-card scrollable persistent-advisor">
           <h2 id="lbl-olmo-advisor">OLMO AI Advisor</h2>
           <div class="advisor-chat-container">
             <div id="advisor-chat-history" class="chat-history">

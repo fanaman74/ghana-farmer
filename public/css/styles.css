@@ -1110,14 +1110,15 @@ body {
   color: var(--text-muted);
 }
 
-/* Details panel rendered below Leaflet map */
+/* Details panel rendered below Leaflet map - Aggregated Grid Dossier */
 .map-bottom-details {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   padding: 16px;
-  background: rgba(8, 12, 10, 0.85);
+  background: rgba(8, 12, 10, 0.88);
   border-top: 1px solid var(--border-muted);
-  max-height: 330px;
+  max-height: 420px;
   overflow-y: auto;
   width: 100%;
   z-index: 997;
@@ -1130,15 +1131,43 @@ body {
 }
 
 .map-bottom-details .card {
-  flex: 1;
   margin-bottom: 0;
   background: rgba(22, 34, 28, 0.65);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-md);
   box-sizing: border-box;
-  max-height: 298px;
+  max-height: 388px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Persistent Full-Height AI Advisor Chat Sidebar */
+.persistent-advisor {
+  height: 100% !important;
+  max-height: calc(100vh - var(--header-height) - 40px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin-bottom: 0 !important;
+}
+
+.persistent-advisor .advisor-chat-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 30px);
+}
+
+.persistent-advisor .chat-history {
+  flex-grow: 1;
+  max-height: calc(100vh - var(--header-height) - 280px) !important;
+  overflow-y: auto;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-muted);
+  padding: 12px;
+  margin-bottom: 12px;
 }
 
 /* Reduced Motion preferences */
