@@ -108,9 +108,9 @@ export function displayFarms(farms, onFarmClicked) {
       
       const layer = L.geoJSON(geo, {
         style: {
-          color: '#10b981', // Emerald green
+          color: '#5e6ad2', // Brand Indigo
           weight: 3,
-          fillColor: '#10b981',
+          fillColor: '#5e6ad2',
           fillOpacity: 0.25
         }
       }).addTo(map);
@@ -153,7 +153,7 @@ export function highlightFarm(farmId) {
   // Reset all other layers first
   Object.keys(savedFarmLayers).forEach(id => {
     savedFarmLayers[id].setStyle({
-      color: '#10b981',
+      color: '#5e6ad2',
       fillOpacity: 0.25,
       weight: 3
     });
@@ -163,7 +163,7 @@ export function highlightFarm(farmId) {
   const layer = savedFarmLayers[farmId];
   if (layer) {
     layer.setStyle({
-      color: '#84cc16', // Lime green highlight
+      color: '#828fff', // Accent Violet highlight
       fillOpacity: 0.4,
       weight: 5
     });
