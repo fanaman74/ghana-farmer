@@ -8,8 +8,8 @@ let benchmarkChartInstance = null;
 
 // Premium dark-mode chart defaults
 const chartGridColor = 'rgba(255, 255, 255, 0.05)';
-const chartTextColor = '#9ca3af';
-const chartFontFamily = "'Outfit', sans-serif";
+const chartTextColor = '#8a8f98';
+const chartFontFamily = "'Inter', sans-serif";
 
 /**
  * Renders the weather forecast line/bar chart (temperature + rain probability).
@@ -44,8 +44,8 @@ export function renderWeatherChart(dailyData) {
           label: window.translate('lbl-soil-moisture') + ' / Rain (mm)',
           type: 'bar',
           data: rainSums,
-          backgroundColor: 'rgba(16, 185, 129, 0.35)',
-          borderColor: '#10b981',
+          backgroundColor: 'rgba(94, 106, 210, 0.35)',
+          borderColor: '#5e6ad2',
           borderWidth: 1,
           yAxisID: 'yRain',
           borderRadius: 4
@@ -54,8 +54,8 @@ export function renderWeatherChart(dailyData) {
           label: 'Max Temp (°C)',
           type: 'line',
           data: maxTemps,
-          borderColor: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderColor: '#828fff',
+          backgroundColor: 'rgba(130, 143, 255, 0.1)',
           fill: false,
           tension: 0.4,
           yAxisID: 'yTemp',
@@ -65,8 +65,8 @@ export function renderWeatherChart(dailyData) {
           label: 'Min Temp (°C)',
           type: 'line',
           data: minTemps,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderColor: '#a8b1ff',
+          backgroundColor: 'rgba(168, 177, 255, 0.1)',
           fill: false,
           tension: 0.4,
           yAxisID: 'yTemp',
@@ -131,8 +131,8 @@ export function renderNdviChart(ndviSeries) {
 
   // Generate dynamic gradient underlay
   const gradient = ctx.createLinearGradient(0, 0, 0, 160);
-  gradient.addColorStop(0, 'rgba(132, 204, 22, 0.3)');
-  gradient.addColorStop(1, 'rgba(132, 204, 22, 0.0)');
+  gradient.addColorStop(0, 'rgba(94, 106, 210, 0.3)');
+  gradient.addColorStop(1, 'rgba(94, 106, 210, 0.0)');
 
   ndviChartInstance = new Chart(ctx, {
     type: 'line',
@@ -141,7 +141,7 @@ export function renderNdviChart(ndviSeries) {
       datasets: [{
         label: 'NDVI Vegetation Health',
         data: values,
-        borderColor: '#84cc16', // Lime green
+        borderColor: '#5e6ad2', // Brand Indigo
         backgroundColor: gradient,
         fill: true,
         tension: 0.4,
@@ -195,8 +195,8 @@ export function renderBenchmarkChart(yieldStats, cropName) {
 
   // Gradient background
   const gradient = ctx.createLinearGradient(0, 0, 0, 180);
-  gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
-  gradient.addColorStop(1, 'rgba(132, 204, 22, 0.1)');
+  gradient.addColorStop(0, 'rgba(94, 106, 210, 0.4)');
+  gradient.addColorStop(1, 'rgba(130, 143, 255, 0.1)');
 
   benchmarkChartInstance = new Chart(ctx, {
     type: 'bar',
@@ -206,7 +206,7 @@ export function renderBenchmarkChart(yieldStats, cropName) {
         label: `${cropName} Yield (${unit})`,
         data: values,
         backgroundColor: gradient,
-        borderColor: '#10b981',
+        borderColor: '#5e6ad2',
         borderWidth: 1,
         borderRadius: 4
       }]
