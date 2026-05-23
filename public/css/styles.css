@@ -2,42 +2,53 @@
    Ghana Farmer Support App - Modern Design Tokens & CSS Variables
    ========================================================================== */
 :root {
-  /* Harmonized Color Palette */
-  --bg-app: #080b09;
-  --bg-sidebar: rgba(15, 23, 20, 0.65);
-  --bg-card: rgba(22, 34, 28, 0.45);
-  --bg-card-hover: rgba(30, 48, 38, 0.6);
+  /* Color Canvas */
+  --bg-app: #08090a;            /* Marketing Black */
+  --bg-sidebar: #0f1011;        /* Panel Dark */
+  --bg-card: rgba(255, 255, 255, 0.05); /* Level 2 Card (Luminance Stacking) */
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
   
-  --border-glow: rgba(16, 185, 129, 0.15);
-  --border-glow-hover: rgba(16, 185, 129, 0.35);
-  --border-muted: rgba(255, 255, 255, 0.06);
+  /* Brand Accent Signatures */
+  --color-primary: #5e6ad2;       /* Brand Indigo */
+  --color-primary-hover: #828fff; /* Accent Violet */
+  --color-accent: #a8b1ff;        /* Violet Light */
+  --color-accent-hover: #828fff;
   
-  --color-primary: #10b981; /* Emerald */
-  --color-primary-hover: #059669;
-  --color-accent: #84cc16; /* Lime */
-  --color-accent-hover: #65a30d;
-  --color-success: #22c55e; /* Green */
-  --color-success-hover: #16a34a;
-  --color-danger: #ef4444;
-  --color-danger-hover: #dc2626;
+  /* Status Color Palette (strictly for functional data/status states) */
+  --color-success: #27a644;       /* Success Green */
+  --color-success-hover: #10b981; /* Complete Emerald */
+  --color-danger: #e53935;        /* Red */
+  --color-danger-hover: #ef4444;
+  --color-warning: #f59e0b;       /* Amber */
   
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --text-dark: #1f2937;
+  /* Text Contrast Hierarchy */
+  --text-main: #f7f8f8;           /* White Primary */
+  --text-muted: #8a8f98;          /* Tertiary Muted Gray */
+  --text-dark: #08090a;           /* Dark Canvas */
   
-  /* Fonts */
-  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Transparent Hairline Borders */
+  --border-micro: rgba(255, 255, 255, 0.02);
+  --border-glow: rgba(255, 255, 255, 0.05);       /* Border Subtle */
+  --border-glow-hover: rgba(255, 255, 255, 0.08); /* Border Standard */
+  --border-muted: rgba(255, 255, 255, 0.02);
   
-  /* Sizing / Layout spacing */
+  /* Fonts & Weights */
+  --font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Berkeley Mono', 'SF Mono', Consolas, monospace;
+  
+  /* Radius Rules */
+  --radius-sm: 4px;   /* Standard */
+  --radius-md: 6px;   /* Comfortable (Buttons, inputs) */
+  --radius-lg: 8px;   /* Card */
+  --radius-panel: 12px; /* Dialogs / Modals */
+  
+  /* Controlled Snappy Motion */
+  --transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Snappy quadratic */
+  --glass-blur: blur(12px) saturate(180%);
   --header-height: 70px;
   --sidebar-width: 300px;
   --analytics-width: 400px;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-  --glass-blur: blur(14px);
 }
 
 /* ==========================================================================
@@ -49,13 +60,24 @@
   padding: 0;
 }
 
-body {
+body, button, input, select, textarea {
   font-family: var(--font-family);
+  font-feature-settings: "cv01", "ss03"; /* Non-negotiable Inter features */
+  font-variation-settings: "wght" 400;
+}
+
+body {
   background-color: var(--bg-app);
   color: var(--text-main);
   overflow: hidden;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Emphasis weight 510 on precise continuous axis */
+h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label, .metric-label, .quick-question-btn, #lbl-title {
+  font-variation-settings: "wght" 510 !important;
+  letter-spacing: -0.01em;
 }
 
 .app-container {
