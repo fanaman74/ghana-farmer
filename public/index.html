@@ -27,12 +27,17 @@
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">
-      <div class="header-logo">
+      <div class="header-logo" id="btn-header-home" style="cursor: pointer;">
         <div class="logo-icon">🌱</div>
         <h1 id="lbl-title">Ghana Farmer Support</h1>
       </div>
       
       <div class="header-actions">
+        <!-- Back to Home button (Visible only when in Dashboard View) -->
+        <button id="btn-back-home" class="btn btn-home-link hidden">
+          🏠 <span id="btn-back-home-label">Home</span>
+        </button>
+
         <!-- Online/Offline Badge -->
         <div id="connection-badge" class="badge online">
           <span class="badge-dot"></span>
@@ -48,8 +53,53 @@
       </div>
     </header>
 
-    <!-- Main Layout -->
-    <main class="app-body">
+    <!-- Home View (Animated Hero & Feature Grid) -->
+    <main id="home-view" class="home-view-container">
+      <div class="hero-bg-glow"></div>
+      
+      <section class="hero-section">
+        <div class="hero-logo-shimmer">🌱</div>
+        <h1 id="lbl-hero-title">Empowering Ghanaian Agriculture</h1>
+        <p id="lbl-hero-subtitle">Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.</p>
+      </section>
+
+      <section class="features-grid">
+        <!-- Weather Card -->
+        <div class="feature-nav-card" id="btn-go-weather">
+          <div class="feature-nav-icon">🌦️</div>
+          <h3 id="lbl-feature-weather-title">Weather & Soil Health</h3>
+          <p id="lbl-feature-weather-desc">6-hour cached forecasts, soil moisture, and transpiration curves.</p>
+          <span class="feature-nav-action-indicator">➔</span>
+        </div>
+
+        <!-- Crop Health Card -->
+        <div class="feature-nav-card" id="btn-go-ndvi">
+          <div class="feature-nav-icon">🛰️</div>
+          <h3 id="lbl-feature-ndvi-title">Satellite Crop Health</h3>
+          <p id="lbl-feature-ndvi-desc">Sentinel Hub NDVI vegetative indices and seasonal curves.</p>
+          <span class="feature-nav-action-indicator">➔</span>
+        </div>
+
+        <!-- Yield Card -->
+        <div class="feature-nav-card" id="btn-go-yield">
+          <div class="feature-nav-icon">📊</div>
+          <h3 id="lbl-feature-faostat-title">National Yield Benchmarks</h3>
+          <p id="lbl-feature-faostat-desc">FAOSTAT crop statistics and local yield comparisons.</p>
+          <span class="feature-nav-action-indicator">➔</span>
+        </div>
+
+        <!-- Advisor Card -->
+        <div class="feature-nav-card" id="btn-go-advisor">
+          <div class="feature-nav-icon">🤖</div>
+          <h3 id="lbl-feature-advisor-title">AI Farm Advisor</h3>
+          <p id="lbl-feature-advisor-desc">Instant agri advice in English, Twi, and Ewe with farm context.</p>
+          <span class="feature-nav-action-indicator">➔</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Main Layout (Dashboard View - initially hidden) -->
+    <main id="dashboard-view" class="app-body hidden">
       <!-- Sidebar Pane -->
       <aside class="sidebar">
         <!-- User Profile Switcher -->
@@ -91,12 +141,28 @@
 
       <!-- Center Map Pane -->
       <section class="map-pane">
+        <!-- Ghana Location Search Bar -->
+        <div class="map-search-container">
+          <input type="text" id="map-search-input" class="form-input" placeholder="Search any town or region in Ghana...">
+          <button id="btn-map-search" class="btn btn-primary">
+            <span id="btn-search">Search</span>
+          </button>
+        </div>
+
         <div id="map" class="map-container"></div>
+
+        <!-- Driving Map Navigation Tabs -->
+        <div class="map-nav-tabs">
+          <button class="map-tab-btn active" data-tab="weather" id="btn-tab-weather">🌦️ Weather</button>
+          <button class="map-tab-btn" data-tab="ndvi" id="btn-tab-ndvi">🛰️ Crop Health</button>
+          <button class="map-tab-btn" data-tab="yield" id="btn-tab-yield">📊 Benchmarks</button>
+          <button class="map-tab-btn" data-tab="advisor" id="btn-tab-advisor">🤖 AI Advisor</button>
+        </div>
       </section>
 
       <!-- Right Analytics Pane -->
       <aside class="analytics-pane">
-        <!-- Overview Card -->
+        <!-- Overview Card (Always Visible inside Dashboard View) -->
         <section class="card overview-card">
           <h2 id="lbl-farm-overview">Farm Overview</h2>
           <div id="overview-content">
@@ -104,8 +170,8 @@
           </div>
         </section>
 
-        <!-- Weather and Soil Forecast Card -->
-        <section class="card weather-card scrollable">
+        <!-- Weather and Soil Forecast Card (Tab-Driven) -->
+        <section class="card weather-card scrollable active-tab-pane" data-tab="weather">
           <h2 id="lbl-weather-climate">Weather & Climate</h2>
           <div id="weather-content" class="hidden">
             <div class="weather-metrics">
@@ -125,8 +191,8 @@
           <p class="select-hint" id="lbl-select-farm-hint-weather">Select a farm to view weather.</p>
         </section>
 
-        <!-- Vegetation NDVI Health Card -->
-        <section class="card vegetation-card scrollable">
+        <!-- Vegetation NDVI Health Card (Tab-Driven) -->
+        <section class="card vegetation-card scrollable" data-tab="ndvi">
           <h2 id="lbl-crop-health">Crop Health (NDVI)</h2>
           <div id="ndvi-content" class="hidden">
             <!-- NDVI Health Gauge -->
@@ -147,8 +213,8 @@
           <p class="select-hint" id="lbl-select-farm-hint-ndvi">Select a farm to view NDVI health.</p>
         </section>
 
-        <!-- FAOSTAT Historical Benchmarks Card -->
-        <section class="card benchmark-card scrollable">
+        <!-- FAOSTAT Historical Benchmarks Card (Tab-Driven) -->
+        <section class="card benchmark-card scrollable" data-tab="yield">
           <h2 id="lbl-yield-benchmarks">Ghana Yield Benchmarks</h2>
           <div class="benchmark-controls">
             <select id="crop-select" class="form-select">
@@ -163,8 +229,8 @@
           </div>
         </section>
 
-        <!-- OLMO AI Agricultural Advisor Card -->
-        <section class="card advisor-card scrollable">
+        <!-- OLMO AI Agricultural Advisor Card (Tab-Driven) -->
+        <section class="card advisor-card scrollable" data-tab="advisor">
           <h2 id="lbl-olmo-advisor">OLMO AI Advisor</h2>
           <div class="advisor-chat-container">
             <div id="advisor-chat-history" class="chat-history">
@@ -202,7 +268,7 @@
   <script src="js/i18n.js"></script>
   <script src="js/map.js"></script>
   <script src="js/charts.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js" type="module"></script>
   <script>
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {

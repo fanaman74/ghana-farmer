@@ -178,3 +178,24 @@ export function clearDrawnLayers() {
     drawnItems.clearLayers();
   }
 }
+
+/**
+ * Force Leaflet to re-calculate map size/dimensions.
+ * Essential when toggling view layers.
+ */
+export function invalidateMapSize() {
+  if (map) {
+    map.invalidateSize();
+  }
+}
+
+/**
+ * Flies / sets the map focus to a set of coordinates.
+ * Used by geocoder search bar.
+ */
+export function flyToCoords(lat, lon, zoom = 12) {
+  if (map) {
+    map.setView([lat, lon], zoom);
+  }
+}
+

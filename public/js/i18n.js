@@ -32,7 +32,25 @@ const TRANSLATIONS = {
     "lbl-created": "Saved On",
     "lbl-olmo-advisor": "OLMO AI Advisor",
     "lbl-advisor-welcome": "Welcome! I am OLMO, your wise agricultural advisor. Ask me anything about your crops, soils, or seasons!",
-    "placeholder-advisor": "Ask OLMO a question..."
+    "placeholder-advisor": "Ask OLMO a question...",
+    // Phase 2 additions
+    "lbl-hero-title": "Empowering Ghanaian Agriculture",
+    "lbl-hero-subtitle": "Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.",
+    "lbl-feature-weather-title": "Weather & Soil Health",
+    "lbl-feature-weather-desc": "6-hour cached forecasts, soil moisture, and transpiration curves.",
+    "lbl-feature-ndvi-title": "Satellite Crop Health",
+    "lbl-feature-ndvi-desc": "Sentinel Hub NDVI vegetative indices and seasonal curves.",
+    "lbl-feature-faostat-title": "National Yield Benchmarks",
+    "lbl-feature-faostat-desc": "FAOSTAT crop statistics and local yield comparisons.",
+    "lbl-feature-advisor-title": "AI Farm Advisor",
+    "lbl-feature-advisor-desc": "Instant agri advice in English, Twi, and Ewe with farm context.",
+    "btn-back-home": "Home",
+    "placeholder-search": "Search any town or region in Ghana...",
+    "btn-search": "Search",
+    "btn-tab-weather": "🌦️ Weather",
+    "btn-tab-ndvi": "🛰️ Crop Health",
+    "btn-tab-yield": "📊 Benchmarks",
+    "btn-tab-advisor": "🤖 AI Advisor"
   },
   ak: { // Akan (Twi)
     "lbl-title": "Ghana Kuafo Akwankyerɛ",
@@ -62,7 +80,25 @@ const TRANSLATIONS = {
     "lbl-created": "Woakora Wɔ",
     "lbl-olmo-advisor": "OLMO Mmoa Nyansafoɔ",
     "lbl-advisor-welcome": "Akwaaba! Meyɛ OLMO, w'agble ho mmoa nyansafoɔ. Bisa me biribiara a ɛfa nnɔbae, asase, anaa wiem tebea ho!",
-    "placeholder-advisor": "Bisa OLMO afutuo bi..."
+    "placeholder-advisor": "Bisa OLMO afutuo bi...",
+    // Phase 2 additions
+    "lbl-hero-title": "Yɛma Ghana Kuafoɔ Daakye So",
+    "lbl-hero-subtitle": "Asase ho nsɛm mfonini, wiem tebea, nnɔbae yiedie ne OLMO AI mmoa nyansafoɔ wɔ Twi, Ewe ne Borɔfo mu.",
+    "lbl-feature-weather-title": "Wiem Tebea & Dɔteɛ",
+    "lbl-feature-weather-desc": "Osu, wiem hyew ne dɔteɛ mu nsuo afutuo a ɛba dɔnhwerew 6 biara.",
+    "lbl-feature-ndvi-title": "Satellite Nnɔbae Yiedie",
+    "lbl-feature-ndvi-desc": "Sentinel Hub mfonini ne nnɔbae yiedie ho nsenkyerɛnne daadaa.",
+    "lbl-feature-faostat-title": "Ghana Nnɔbae Twa Nsɛso",
+    "lbl-feature-faostat-desc": "FAOSTAT aburo, kokoo ne nnɔbae twa ho nsɛso mfe ahorow mu.",
+    "lbl-feature-advisor-title": "OLMO Kuafo Mmoa Nyansafoɔ",
+    "lbl-feature-advisor-desc": "Bisa nnɔbae ne afuw yiedie ho nsɛm wɔ Twi mu ntɛm ara.",
+    "btn-back-home": "Fie",
+    "placeholder-search": "Hwehwɛ beaeɛ biara wɔ Ghana...",
+    "btn-search": "Hwehwɛ",
+    "btn-tab-weather": "🌦️ Wiem Tebea",
+    "btn-tab-ndvi": "🛰️ Nnɔbae Yiedie",
+    "btn-tab-yield": "📊 Nsenkyerɛnne",
+    "btn-tab-advisor": "🤖 AI Advisor"
   },
   ee: { // Ewe
     "lbl-title": "Ghana Agbledela Kpekpeɖeŋu",
@@ -92,7 +128,25 @@ const TRANSLATIONS = {
     "lbl-created": "Dzra Ðo Wɔ",
     "lbl-olmo-advisor": "OLMO Agbleɖaŋuɖola",
     "lbl-advisor-welcome": "Woezɔ! Nyea OLMO wò agbleɖaŋuɖola. Bia nyagbɔwo tso nukuwo alo ya me ƒe nɔnɔmewo ŋu!",
-    "placeholder-advisor": "Bia nyagbɔ aɖe OLMO..."
+    "placeholder-advisor": "Bia nyagbɔ aɖe OLMO...",
+    // Phase 2 additions
+    "lbl-hero-title": "Wɔakpe Ðe Ghana Agbledelawo Ŋu",
+    "lbl-hero-subtitle": "Anyigbahata kpɔkpɔ, ya me ƒe nɔnɔmewo, nukuwo ƒe lãmesẽ kple OLMO AI ŋuti nufiame le Ewegbe, Twigbe kple Eŋlisigbe me.",
+    "lbl-feature-weather-title": "Ya me ƒe Nɔnɔme & Anyigba",
+    "lbl-feature-weather-desc": "Tsidodo, ya ƒe dzoxoxowo kple anyigba me nsuo ƒe liƒowo le gafo 6 me.",
+    "lbl-feature-ndvi-title": "Satellite Nuku Lãmesẽ",
+    "lbl-feature-ndvi-desc": "Sentinel Hub nukuwo ƒe lãmesẽ liƒowo kple ya me ƒe nuku dɔlelewo.",
+    "lbl-feature-faostat-title": "Ghana Nuku Kudodo",
+    "lbl-feature-faostat-desc": "FAOSTAT bli, kokoo kple nukuwo ƒe lãmesẽ sɔsɔ le ƒewo me.",
+    "lbl-feature-advisor-title": "OLMO Agbleɖaŋuɖola AI",
+    "lbl-feature-advisor-desc": "Bia nyagbɔwo tso nukuwo ne agbleawo ŋuti le Ewegbe me enumake.",
+    "btn-back-home": "Aƒeme",
+    "placeholder-search": "Dii teƒe aɖe le Ghana...",
+    "btn-search": "Dii",
+    "btn-tab-weather": "🌦️ Ya me ƒe Nɔnɔme",
+    "btn-tab-ndvi": "🛰️ Nuku Lãmesẽ",
+    "btn-tab-yield": "📊 Nugblekpɔkpɔ",
+    "btn-tab-advisor": "🤖 AI Advisor"
   }
 };
 
@@ -131,6 +185,10 @@ function setLanguage(lang) {
   const advisorInput = document.getElementById('advisor-input-text');
   if (advisorInput) {
     advisorInput.placeholder = TRANSLATIONS[lang]['placeholder-advisor'];
+  }
+  const searchInput = document.getElementById('map-search-input');
+  if (searchInput) {
+    searchInput.placeholder = TRANSLATIONS[lang]['placeholder-search'];
   }
 
   // 3. Keep active class highlighted on selector buttons

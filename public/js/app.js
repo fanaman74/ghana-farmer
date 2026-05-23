@@ -7,7 +7,9 @@ import {
   displayFarms, 
   focusFarm, 
   highlightFarm, 
-  clearDrawnLayers 
+  clearDrawnLayers,
+  invalidateMapSize,
+  flyToCoords
 } from './map.js';
 
 import { 
@@ -15,6 +17,25 @@ import {
   renderNdviChart, 
   renderBenchmarkChart 
 } from './charts.js';
+
+// Pre-defined local Ghanaian agricultural hubs for offline-resilient location search
+const LOCAL_GHANA_PLACES = {
+  kumasi: { lat: 6.6885, lon: -1.6244, zoom: 12 },
+  accra: { lat: 5.6037, lon: -0.1870, zoom: 12 },
+  tamale: { lat: 9.4008, lon: -0.8393, zoom: 12 },
+  sunyani: { lat: 7.3399, lon: -2.3263, zoom: 12 },
+  techiman: { lat: 7.5833, lon: -1.9333, zoom: 12 },
+  ejura: { lat: 7.3833, lon: -1.3667, zoom: 12 },
+  koforidua: { lat: 6.0945, lon: -0.2591, zoom: 12 },
+  ho: { lat: 6.6000, lon: 0.4700, zoom: 12 },
+  wa: { lat: 10.0600, lon: -2.5000, zoom: 12 },
+  bolgatanga: { lat: 10.7856, lon: -0.8514, zoom: 12 },
+  wenchi: { lat: 7.7333, lon: -2.1000, zoom: 12 },
+  berekum: { lat: 7.4534, lon: -2.5842, zoom: 12 },
+  ejisu: { lat: 6.7167, lon: -1.5000, zoom: 12 },
+  nsawam: { lat: 5.8078, lon: -0.3503, zoom: 12 },
+  obuasi: { lat: 6.2000, lon: -1.6667, zoom: 12 }
+};
 
 // Application State
 let activeUserId = null;
@@ -154,6 +175,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       const query = e.currentTarget.getAttribute('data-query');
       sendAdvisorMessage(query);
     });
+  });
+
+  // Phase 2: Navigation event listeners
+  document.getElementById('btn-header-home').addEventListener('click', () => navigateToView('home'));
+  document.getElementById('btn-back-home').addEventListener('click', () => navigateToView('home'));
+
+  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard', 'weather'));
+  document.getElementById('btn-go-ndvi').addEventListener('click', () => navigateToView('dashboard', 'ndvi'));
+  document.getElementById('btn-go-yield').addEventListener('click', () => navigateToView('dashboard', 'yield'));
+  document.getElementById('btn-go-advisor').addEventListener('click', () => navigateToView('dashboard', 'advisor'));
+
+  // Map driven tabs navigation click triggers
+  document.querySelectorAll('.map-tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tab = e.currentTarget.getAttribute('data-tab');
+      activateTabPane(tab);
+    });
+  });
+
+  // Ghana location search triggers
+  document.getElementById('btn-map-search').addEventListener('click', handleMapSearch);
+  document.getElementById('map-search-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      handleMapSearch();
+    }
   });
 });
 
@@ -647,3 +693,134 @@ function updateNetworkStatus() {
     badgeText.textContent = window.translate('lbl-status-offline');
   }
 }
+
+/**
+ * -------------------------------------------------------------
+ * PHASE 2 STATE ROUTER & NOMINATIM GEOLOCATION SEARCH ENGINE
+ * -------------------------------------------------------------
+ */
+
+/**
+ * Transitions layout states between Home screen and Dashboard map view.
+ * Integrates native SPA View Transitions API if supported.
+ * @param {string} viewName - 'home' | 'dashboard'
+ * @param {string} preselectedTab - active feature tab to pre-load
+ */
+function navigateToView(viewName, preselectedTab = 'weather') {
+  const updateDOM = () => {
+    const homeView = document.getElementById('home-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const backHomeBtn = document.getElementById('btn-back-home');
+
+    if (viewName === 'home') {
+      homeView.classList.remove('hidden');
+      dashboardView.classList.add('hidden');
+      backHomeBtn.classList.add('hidden');
+    } else {
+      homeView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      backHomeBtn.classList.remove('hidden');
+
+      // Trigger map resize invalidate size to ensure Leaflet renders correctly
+      setTimeout(() => {
+        invalidateMapSize();
+      }, 80);
+
+      // Pre-activate the matching analytics tab
+      activateTabPane(preselectedTab);
+    }
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(() => updateDOM());
+  } else {
+    updateDOM();
+  }
+}
+
+/**
+ * Activates / displays only the selected analytics tab on the right sidebar panel.
+ * @param {string} tabName - 'weather' | 'ndvi' | 'yield' | 'advisor'
+ */
+function activateTabPane(tabName) {
+  // Highlight active driving map tab button
+  document.querySelectorAll('.map-tab-btn').forEach(btn => {
+    if (btn.getAttribute('data-tab') === tabName) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // Display only the relevant card in the right sidebar
+  document.querySelectorAll('.analytics-pane .card[data-tab]').forEach(card => {
+    if (card.getAttribute('data-tab') === tabName) {
+      card.classList.add('active-tab-pane');
+    } else {
+      card.classList.remove('active-tab-pane');
+    }
+  });
+
+  // Force chart refresh or API fetch triggers for the newly loaded view
+  if (activeFarmId) {
+    if (tabName === 'weather') fetchWeather(activeFarmId);
+    if (tabName === 'ndvi') fetchNDVI(activeFarmId);
+  }
+}
+
+/**
+ * Asynchronously searches for regions / towns in Ghana.
+ * Integrates OSM Nominatim lookup with robust offline preset hub fallback.
+ */
+async function handleMapSearch() {
+  const input = document.getElementById('map-search-input');
+  const query = input.value.trim().toLowerCase();
+  if (!query) return;
+
+  // 1. Online Nominatim geocoding check
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=Ghana+${encodeURIComponent(query)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const first = data[0];
+        const lat = parseFloat(first.lat);
+        const lon = parseFloat(first.lon);
+        
+        flyToCoords(lat, lon, 12);
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('Nominatim API geocoder failed, attempting local catalog fallback:', err.message);
+  }
+
+  // 2. Offline presets lookup matching query string
+  let matchedPlace = null;
+  Object.keys(LOCAL_GHANA_PLACES).forEach(key => {
+    if (query.includes(key) || key.includes(query)) {
+      matchedPlace = LOCAL_GHANA_PLACES[key];
+    }
+  });
+
+  if (matchedPlace) {
+    flyToCoords(matchedPlace.lat, matchedPlace.lon, matchedPlace.zoom);
+  } else {
+    const isTwi = window.currentLanguage === 'ak';
+    const isEwe = window.currentLanguage === 'ee';
+    
+    let alertMsg = 'Location not found. Try searching Kumasi, Techiman, Tamale, or Accra.';
+    if (isTwi) {
+      alertMsg = 'Yɛantumi anhu beaeɛ no. Hwehwɛ Kumasi, Techiman, Tamale anaa Accra.';
+    } else if (isEwe) {
+      alertMsg = 'Womedze teƒea ɖo o. Dii Kumasi, Techiman, Tamale alo Accra kpɔ.';
+    }
+    
+    alert(alertMsg);
+  }
+}
+
+// Bind to window to allow global trigger calls if needed
+window.navigateToView = navigateToView;
+window.activateTabPane = activateTabPane;
+window.handleMapSearch = handleMapSearch;
