@@ -457,6 +457,8 @@ async function handleFarmSelection(farm) {
     bottomDetails.classList.remove('hidden');
   }
 
+  document.querySelector('.map-pane')?.classList.add('farm-selected');
+
   // Force Leaflet map resize re-calculation due to shrunken dimensions
   invalidateMapSize();
 
@@ -581,6 +583,8 @@ function resetDetailsPanels() {
   if (bottomDetails) {
     bottomDetails.classList.add('hidden');
   }
+
+  document.querySelector('.map-pane')?.classList.remove('farm-selected');
 
   // Restore Leaflet dimensions to full height
   invalidateMapSize();

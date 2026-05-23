@@ -1113,13 +1113,13 @@ body {
 /* Details panel rendered below Leaflet map - Aggregated Grid Dossier */
 .map-bottom-details {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 16px;
+  grid-template-columns: 1fr; /* 1 card per row */
+  gap: 24px;
+  padding: 24px;
   background: rgba(8, 12, 10, 0.88);
   border-top: 1px solid var(--border-muted);
-  max-height: 420px;
-  overflow-y: auto;
+  max-height: none !important;
+  overflow-y: visible !important;
   width: 100%;
   z-index: 997;
   animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1137,10 +1137,37 @@ body {
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-md);
   box-sizing: border-box;
-  max-height: 388px;
-  overflow-y: auto;
+  max-height: none !important;
+  overflow-y: visible !important;
   display: flex;
   flex-direction: column;
+  padding: 24px;
+}
+
+/* Dynamic scrolling behaviour inside map pane when farm is selected */
+.map-pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: hidden; /* Default to no scrolling when map is full height */
+}
+
+.map-pane.farm-selected {
+  overflow-y: auto; /* Allow full vertical scroll when farm is active */
+}
+
+.map-pane.farm-selected .map-container {
+  height: 500px !important;
+  min-height: 500px !important;
+  flex-shrink: 0;
+}
+
+.map-pane.farm-selected .chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  margin-top: 16px;
 }
 
 /* Persistent Full-Height AI Advisor Chat Sidebar */
