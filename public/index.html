@@ -154,46 +154,48 @@
 
         <!-- Driving Map Navigation Tabs -->
         <div class="map-nav-tabs">
-          <button class="map-tab-btn active" data-tab="weather" id="btn-tab-weather">🌦️ Weather</button>
-          <button class="map-tab-btn" data-tab="ndvi" id="btn-tab-ndvi">🛰️ Crop Health</button>
+          <button class="map-tab-btn active" data-tab="ndvi" id="btn-tab-ndvi">🛰️ Crop Health</button>
           <button class="map-tab-btn" data-tab="yield" id="btn-tab-yield">📊 Benchmarks</button>
           <button class="map-tab-btn" data-tab="advisor" id="btn-tab-advisor">🤖 AI Advisor</button>
+        </div>
+
+        <!-- Details below the map (visible after farm selection) -->
+        <div id="map-bottom-details" class="map-bottom-details hidden">
+          <!-- Farm Overview Card -->
+          <div class="card bottom-card overview-card">
+            <h2 id="lbl-farm-overview">Farm Overview</h2>
+            <div id="overview-content">
+              <p class="select-hint" id="lbl-select-farm-hint">Select a farm on the left or map to view details.</p>
+            </div>
+          </div>
+
+          <!-- Weather and Soil Forecast Card -->
+          <div class="card bottom-card weather-card scrollable">
+            <h2 id="lbl-weather-climate">Weather & Climate</h2>
+            <div id="weather-content" class="hidden">
+              <div class="weather-metrics">
+                <div class="metric">
+                  <span class="metric-label" id="lbl-soil-moisture">Soil Moisture</span>
+                  <span id="val-soil-moisture" class="metric-value">--</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-label" id="lbl-evap">Evapotranspiration</span>
+                  <span id="val-evap" class="metric-value">--</span>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="weatherChart"></canvas>
+              </div>
+            </div>
+            <p class="select-hint" id="lbl-select-farm-hint-weather">Select a farm to view weather.</p>
+          </div>
         </div>
       </section>
 
       <!-- Right Analytics Pane -->
       <aside class="analytics-pane">
-        <!-- Overview Card (Always Visible inside Dashboard View) -->
-        <section class="card overview-card">
-          <h2 id="lbl-farm-overview">Farm Overview</h2>
-          <div id="overview-content">
-            <p class="select-hint" id="lbl-select-farm-hint">Select a farm on the left or map to view details.</p>
-          </div>
-        </section>
-
-        <!-- Weather and Soil Forecast Card (Tab-Driven) -->
-        <section class="card weather-card scrollable active-tab-pane" data-tab="weather">
-          <h2 id="lbl-weather-climate">Weather & Climate</h2>
-          <div id="weather-content" class="hidden">
-            <div class="weather-metrics">
-              <div class="metric">
-                <span class="metric-label" id="lbl-soil-moisture">Soil Moisture</span>
-                <span id="val-soil-moisture" class="metric-value">--</span>
-              </div>
-              <div class="metric">
-                <span class="metric-label" id="lbl-evap">Evapotranspiration</span>
-                <span id="val-evap" class="metric-value">--</span>
-              </div>
-            </div>
-            <div class="chart-container">
-              <canvas id="weatherChart"></canvas>
-            </div>
-          </div>
-          <p class="select-hint" id="lbl-select-farm-hint-weather">Select a farm to view weather.</p>
-        </section>
-
-        <!-- Vegetation NDVI Health Card (Tab-Driven) -->
-        <section class="card vegetation-card scrollable" data-tab="ndvi">
+        <!-- Vegetation NDVI Health Card (Tab-Driven - active by default) -->
+        <section class="card vegetation-card scrollable active-tab-pane" data-tab="ndvi">
           <h2 id="lbl-crop-health">Crop Health (NDVI)</h2>
           <div id="ndvi-content" class="hidden">
             <!-- NDVI Health Gauge -->

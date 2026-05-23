@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-header-home').addEventListener('click', () => navigateToView('home'));
   document.getElementById('btn-back-home').addEventListener('click', () => navigateToView('home'));
 
-  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard', 'weather'));
+  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard', 'ndvi'));
   document.getElementById('btn-go-ndvi').addEventListener('click', () => navigateToView('dashboard', 'ndvi'));
   document.getElementById('btn-go-yield').addEventListener('click', () => navigateToView('dashboard', 'yield'));
   document.getElementById('btn-go-advisor').addEventListener('click', () => navigateToView('dashboard', 'advisor'));
@@ -459,6 +459,15 @@ async function handleFarmSelection(farm) {
   // Populate dynamic cards
   updateFarmDetailsCard(farm);
 
+  // Show bottom details panel below Leaflet map
+  const bottomDetails = document.getElementById('map-bottom-details');
+  if (bottomDetails) {
+    bottomDetails.classList.remove('hidden');
+  }
+
+  // Force Leaflet map resize re-calculation due to shrunken dimensions
+  invalidateMapSize();
+
   // Trigger cache proxies ingestion
   await fetchWeather(farm.id);
   await fetchNDVI(farm.id);
@@ -570,6 +579,15 @@ function resetDetailsPanels() {
   document.getElementById('val-ndvi').textContent = '--';
   const sliderIndicator = document.getElementById('ndvi-gauge-indicator');
   if (sliderIndicator) sliderIndicator.style.left = `0%`;
+
+  // Hide bottom details below the map
+  const bottomDetails = document.getElementById('map-bottom-details');
+  if (bottomDetails) {
+    bottomDetails.classList.add('hidden');
+  }
+
+  // Restore Leaflet dimensions to full height
+  invalidateMapSize();
 }
 
 /**
@@ -704,7 +722,7 @@ function updateNetworkStatus() {
  * @param {string} viewName - 'home' | 'dashboard'
  * @param {string} preselectedTab - active feature tab to pre-load
  */
-function navigateToView(viewName, preselectedTab = 'weather') {
+function navigateToView(viewName, preselectedTab = 'ndvi') {
   const updateDOM = () => {
     const homeView = document.getElementById('home-view');
     const dashboardView = document.getElementById('dashboard-view');

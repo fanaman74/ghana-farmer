@@ -1110,6 +1110,37 @@ body {
   color: var(--text-muted);
 }
 
+/* Details panel rendered below Leaflet map */
+.map-bottom-details {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(8, 12, 10, 0.85);
+  border-top: 1px solid var(--border-muted);
+  max-height: 330px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 997;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.map-bottom-details.hidden {
+  display: none !important;
+}
+
+.map-bottom-details .card {
+  flex: 1;
+  margin-bottom: 0;
+  background: rgba(22, 34, 28, 0.65);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  max-height: 298px;
+  overflow-y: auto;
+}
+
 /* Reduced Motion preferences */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
@@ -1124,6 +1155,9 @@ body {
     transform: none !important;
   }
   .hero-logo-shimmer {
+    animation: none !important;
+  }
+  .map-bottom-details {
     animation: none !important;
   }
 }
