@@ -195,12 +195,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Ghana location search triggers
+  const searchInput = document.getElementById('map-search-input');
+  searchInput.addEventListener('input', handleSearchInput);
+  searchInput.addEventListener('keydown', handleSearchKeydown);
   document.getElementById('btn-map-search').addEventListener('click', handleMapSearch);
-  document.getElementById('map-search-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleMapSearch();
-    }
-  });
 });
 
 /**
@@ -824,3 +822,190 @@ async function handleMapSearch() {
 window.navigateToView = navigateToView;
 window.activateTabPane = activateTabPane;
 window.handleMapSearch = handleMapSearch;
+
+/**
+ * -------------------------------------------------------------
+ * PHASE 2 AUTOCOMPLETE SUGGESTIONS ENGINE
+ * -------------------------------------------------------------
+ */
+
+let autocompleteTimeout = null;
+let activeSuggestionIndex = -1;
+
+/**
+ * Triggers autocomplete search on typing
+ */
+function handleSearchInput(e) {
+  const query = e.target.value.trim().toLowerCase();
+  clearTimeout(autocompleteTimeout);
+  activeSuggestionIndex = -1;
+
+  if (query.length < 2) {
+    hideSuggestions();
+    return;
+  }
+
+  autocompleteTimeout = setTimeout(async () => {
+    await showSuggestions(query);
+  }, 250);
+}
+
+/**
+ * Handles keyboard navigation inside autocomplete list
+ */
+function handleSearchKeydown(e) {
+  const listContainer = document.getElementById('search-autocomplete-list');
+  if (!listContainer || listContainer.classList.contains('hidden')) return;
+
+  const items = listContainer.querySelectorAll('.autocomplete-item');
+  if (items.length === 0) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
+    highlightActiveSuggestion(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+    highlightActiveSuggestion(items);
+  } else if (e.key === 'Enter') {
+    if (activeSuggestionIndex >= 0) {
+      e.preventDefault();
+      items[activeSuggestionIndex].click();
+    } else {
+      // Default Enter searches immediately
+      hideSuggestions();
+      handleMapSearch();
+    }
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    hideSuggestions();
+  }
+}
+
+/**
+ * Highlights selected suggestion
+ */
+function highlightActiveSuggestion(items) {
+  items.forEach((item, index) => {
+    if (index === activeSuggestionIndex) {
+      item.classList.add('active');
+      item.scrollIntoView({ block: 'nearest' });
+    } else {
+      item.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * Performs geocoder suggestion lookup and renders options
+ */
+async function showSuggestions(query) {
+  const listContainer = document.getElementById('search-autocomplete-list');
+  listContainer.innerHTML = '';
+  
+  let suggestions = [];
+
+  // 1. Gather matching local agricultural presets
+  Object.keys(LOCAL_GHANA_PLACES).forEach(key => {
+    if (key.includes(query)) {
+      suggestions.push({
+        name: key.charAt(0).toUpperCase() + key.slice(1),
+        lat: LOCAL_GHANA_PLACES[key].lat,
+        lon: LOCAL_GHANA_PLACES[key].lon,
+        details: 'Ghana agricultural hub preset (offline)'
+      });
+    }
+  });
+
+  // 2. Query Nominatim geocoder if online
+  if (navigator.onLine) {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=Ghana+${encodeURIComponent(query)}&limit=5`);
+      if (res.ok) {
+        const data = await res.json();
+        data.forEach(item => {
+          const shortName = item.display_name.split(',')[0];
+          const addressDetails = item.display_name.split(',').slice(1, 3).join(',').trim();
+          
+          // Deduplicate by name
+          const exists = suggestions.some(s => s.name.toLowerCase() === shortName.toLowerCase());
+          if (!exists) {
+            suggestions.push({
+              name: shortName,
+              lat: parseFloat(item.lat),
+              lon: parseFloat(item.lon),
+              details: addressDetails
+            });
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Nominatim autocomplete suggestion query failed:', err);
+    }
+  }
+
+  if (suggestions.length === 0) {
+    listContainer.classList.add('hidden');
+    return;
+  }
+
+  // Render suggestions dropdown
+  listContainer.classList.remove('hidden');
+  
+  suggestions.forEach((item, index) => {
+    const el = document.createElement('div');
+    el.className = 'autocomplete-item';
+    el.dataset.index = index;
+    
+    el.innerHTML = `
+      <span class="ac-item-name">📍 ${item.name}</span>
+      ${item.details ? `<span class="ac-item-details">${item.details}</span>` : ''}
+    `;
+    
+    el.addEventListener('click', () => {
+      selectSuggestion(item);
+    });
+    
+    listContainer.appendChild(el);
+  });
+}
+
+/**
+ * Selects an autocomplete suggestion and centers map
+ */
+function selectSuggestion(item) {
+  const input = document.getElementById('map-search-input');
+  input.value = item.name;
+  flyToCoords(item.lat, item.lon, 12);
+  hideSuggestions();
+}
+
+/**
+ * Closes the suggestions dropdown panel
+ */
+function hideSuggestions() {
+  const listContainer = document.getElementById('search-autocomplete-list');
+  if (listContainer) {
+    listContainer.classList.add('hidden');
+  }
+  activeSuggestionIndex = -1;
+}
+
+// Register document click listener to close suggestions when clicking outside
+document.addEventListener('click', (e) => {
+  const container = document.querySelector('.map-search-container');
+  if (container && !container.contains(e.target)) {
+    hideSuggestions();
+  }
+});
+
+// Register keyup listeners to clear suggestions when search bar emptied
+document.getElementById('map-search-input').addEventListener('keyup', (e) => {
+  if (e.target.value.trim().length === 0) {
+    hideSuggestions();
+  }
+});
+
+window.hideSuggestions = hideSuggestions;
+window.selectSuggestion = selectSuggestion;
