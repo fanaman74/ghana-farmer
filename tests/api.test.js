@@ -156,6 +156,37 @@ test('Express API Integration Tests', async (t) => {
     assert.ok(duration < 50, 'Cached read should be served in under 50ms from local SQLite');
   });
 
+  await t.test('GET /api/farms/:id/satellite - Fetch NDVI time series', async () => {
+    // 1. Create a dummy farm for testing
+    const farmGeoJson = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[ -0.2059, 5.6148 ], [ -0.2050, 5.6148 ], [ -0.2050, 5.6140 ], [ -0.2059, 5.6148 ]]]
+      }
+    };
+    const postRes = await fetch(`${API_BASE}/api/farms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: defaultUser.id,
+        name: 'Satellite Test Farm',
+        geometry: JSON.stringify(farmGeoJson)
+      })
+    });
+    const farm = await postRes.json();
+
+    // 2. Fetch satellite data (first hit - dynamic mock generated)
+    const satRes = await fetch(`${API_BASE}/api/farms/${farm.id}/satellite`);
+    assert.equal(satRes.status, 200);
+    const satData = await satRes.json();
+    
+    assert.ok(Array.isArray(satData), 'NDVI payload should be an array');
+    assert.ok(satData.length > 0, 'NDVI array should not be empty');
+    assert.ok(satData[0].date, 'Time series elements should have a date');
+    assert.ok(typeof satData[0].ndvi === 'number', 'NDVI values should be numbers');
+  });
+
   // Teardown: close Express server and delete test db
   server.close(() => {
     try {
