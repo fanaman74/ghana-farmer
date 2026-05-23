@@ -20,21 +20,21 @@ import {
 
 // Pre-defined local Ghanaian agricultural hubs for offline-resilient location search
 const LOCAL_GHANA_PLACES = {
-  kumasi: { lat: 6.6885, lon: -1.6244, zoom: 12 },
-  accra: { lat: 5.6037, lon: -0.1870, zoom: 12 },
-  tamale: { lat: 9.4008, lon: -0.8393, zoom: 12 },
-  sunyani: { lat: 7.3399, lon: -2.3263, zoom: 12 },
-  techiman: { lat: 7.5833, lon: -1.9333, zoom: 12 },
-  ejura: { lat: 7.3833, lon: -1.3667, zoom: 12 },
-  koforidua: { lat: 6.0945, lon: -0.2591, zoom: 12 },
-  ho: { lat: 6.6000, lon: 0.4700, zoom: 12 },
-  wa: { lat: 10.0600, lon: -2.5000, zoom: 12 },
-  bolgatanga: { lat: 10.7856, lon: -0.8514, zoom: 12 },
-  wenchi: { lat: 7.7333, lon: -2.1000, zoom: 12 },
-  berekum: { lat: 7.4534, lon: -2.5842, zoom: 12 },
-  ejisu: { lat: 6.7167, lon: -1.5000, zoom: 12 },
-  nsawam: { lat: 5.8078, lon: -0.3503, zoom: 12 },
-  obuasi: { lat: 6.2000, lon: -1.6667, zoom: 12 }
+  kumasi: { lat: 6.6885, lon: -1.6244, zoom: 15 },
+  accra: { lat: 5.6037, lon: -0.1870, zoom: 15 },
+  tamale: { lat: 9.4008, lon: -0.8393, zoom: 15 },
+  sunyani: { lat: 7.3399, lon: -2.3263, zoom: 15 },
+  techiman: { lat: 7.5833, lon: -1.9333, zoom: 15 },
+  ejura: { lat: 7.3833, lon: -1.3667, zoom: 15 },
+  koforidua: { lat: 6.0945, lon: -0.2591, zoom: 15 },
+  ho: { lat: 6.6000, lon: 0.4700, zoom: 15 },
+  wa: { lat: 10.0600, lon: -2.5000, zoom: 15 },
+  bolgatanga: { lat: 10.7856, lon: -0.8514, zoom: 15 },
+  wenchi: { lat: 7.7333, lon: -2.1000, zoom: 15 },
+  berekum: { lat: 7.4534, lon: -2.5842, zoom: 15 },
+  ejisu: { lat: 6.7167, lon: -1.5000, zoom: 15 },
+  nsawam: { lat: 5.8078, lon: -0.3503, zoom: 15 },
+  obuasi: { lat: 6.2000, lon: -1.6667, zoom: 15 }
 };
 
 // Application State
@@ -785,7 +785,7 @@ async function handleMapSearch() {
         const lat = parseFloat(first.lat);
         const lon = parseFloat(first.lon);
         
-        flyToCoords(lat, lon, 12);
+        flyToCoords(lat, lon, 15);
         return;
       }
     }
@@ -977,7 +977,7 @@ async function showSuggestions(query) {
 function selectSuggestion(item) {
   const input = document.getElementById('map-search-input');
   input.value = item.name;
-  flyToCoords(item.lat, item.lon, 12);
+  flyToCoords(item.lat, item.lon, 15);
   hideSuggestions();
 }
 
