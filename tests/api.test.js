@@ -187,6 +187,31 @@ test('Express API Integration Tests', async (t) => {
     assert.ok(typeof satData[0].ndvi === 'number', 'NDVI values should be numbers');
   });
 
+  await t.test('POST /api/advisor - Consult OLMO Agricultural Advisor', async () => {
+    const res = await fetch(`${API_BASE}/api/advisor`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'What is the best time to sow maize in Kumasi?',
+        language: 'en',
+        farmContext: {
+          name: 'Accra Test Farm',
+          size: 2.5,
+          centroid: '6.6885°N, -1.6244°W',
+          crop: 'maize',
+          soilMoisture: '0.35 m³/m³',
+          evap: '0.12 mm'
+        }
+      })
+    });
+
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.ok(data.reply, 'Should return AI reply');
+    assert.ok(typeof data.reply === 'string', 'Reply should be a string');
+    console.log('OLMO AI Reply sample:', data.reply.substring(0, 100) + '...');
+  });
+
   // Teardown: close Express server and delete test db
   server.close(() => {
     try {

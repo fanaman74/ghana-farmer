@@ -162,6 +162,29 @@
             <canvas id="benchmarkChart"></canvas>
           </div>
         </section>
+
+        <!-- OLMO AI Agricultural Advisor Card -->
+        <section class="card advisor-card scrollable">
+          <h2 id="lbl-olmo-advisor">OLMO AI Advisor</h2>
+          <div class="advisor-chat-container">
+            <div id="advisor-chat-history" class="chat-history">
+              <div class="chat-message bot">
+                <p id="lbl-advisor-welcome">Welcome! I am OLMO, your wise agricultural advisor. Ask me anything about your crops, soils, or seasons!</p>
+              </div>
+            </div>
+            
+            <div class="advisor-quick-questions">
+              <button class="quick-question-btn" data-query="What is the best time to plant crops?">🕒 When to plant?</button>
+              <button class="quick-question-btn" data-query="Neem oil spray for Armyworm insects?">🐛 Fall Armyworm?</button>
+              <button class="quick-question-btn" data-query="Yellow spots on my cassava leaves?">🍂 Cassava help?</button>
+            </div>
+
+            <div class="advisor-chat-input-group">
+              <input type="text" id="advisor-input-text" class="form-input" placeholder="Ask OLMO a question...">
+              <button id="btn-send-advisor" class="btn btn-primary">Send</button>
+            </div>
+          </div>
+        </section>
       </aside>
     </main>
   </div>

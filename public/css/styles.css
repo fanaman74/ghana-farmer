@@ -595,6 +595,94 @@ body {
   background: rgba(16, 185, 129, 0.35);
 }
 
+/* ==========================================================================
+   OLMO AI Agricultural Advisor Chat Panel Styles
+   ========================================================================== */
+.advisor-chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.chat-history {
+  height: 200px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.chat-message.bot {
+  align-self: flex-start;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--text-main);
+  border-left-width: 3px;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background: rgba(132, 204, 22, 0.12);
+  border: 1px solid rgba(132, 204, 22, 0.25);
+  color: var(--text-main);
+  border-right-width: 3px;
+}
+
+.chat-message.thinking {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-muted);
+  color: var(--text-muted);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.advisor-quick-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quick-question-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-muted);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: var(--transition);
+}
+
+.quick-question-btn:hover {
+  background: rgba(132, 204, 22, 0.08);
+  border-color: var(--color-accent);
+  color: var(--text-main);
+}
+
+.advisor-chat-input-group {
+  display: flex;
+  gap: 6px;
+}
+
 /* Mobile responsive collapsing grids */
 @media (max-width: 1200px) {
   .app-body {

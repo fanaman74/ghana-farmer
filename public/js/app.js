@@ -136,6 +136,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('online', updateNetworkStatus);
   window.addEventListener('offline', updateNetworkStatus);
   updateNetworkStatus();
+
+  // AI Advisor Event Listeners
+  document.getElementById('btn-send-advisor').addEventListener('click', () => {
+    const input = document.getElementById('advisor-input-text');
+    sendAdvisorMessage(input.value.trim());
+  });
+
+  document.getElementById('advisor-input-text').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendAdvisorMessage(e.target.value.trim());
+    }
+  });
+
+  document.querySelectorAll('.quick-question-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const query = e.currentTarget.getAttribute('data-query');
+      sendAdvisorMessage(query);
+    });
+  });
 });
 
 /**
@@ -507,6 +526,108 @@ function resetDetailsPanels() {
   document.getElementById('val-ndvi').textContent = '--';
   const sliderIndicator = document.getElementById('ndvi-gauge-indicator');
   if (sliderIndicator) sliderIndicator.style.left = `0%`;
+}
+
+/**
+ * -------------------------------------------------------------
+ * AI AGRICULTURAL CONSULTATION FLOW (OLMO ADVISOR)
+ * -------------------------------------------------------------
+ */
+async function sendAdvisorMessage(messageText) {
+  if (!messageText) return;
+
+  const chatHistory = document.getElementById('advisor-chat-history');
+  const inputEl = document.getElementById('advisor-input-text');
+  const sendBtn = document.getElementById('btn-send-advisor');
+
+  // 1. Append User Message to UI
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-message user';
+  userMsg.innerHTML = `<p>${messageText}</p>`;
+  chatHistory.appendChild(userMsg);
+  
+  // Clear input and scroll
+  inputEl.value = '';
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+
+  // 2. Disable input & show thinking status
+  inputEl.disabled = true;
+  sendBtn.disabled = true;
+
+  const thinkingMsg = document.createElement('div');
+  thinkingMsg.className = 'chat-message thinking';
+  thinkingMsg.innerHTML = `<span>⏳</span> <span>OLMO is thinking...</span>`;
+  chatHistory.appendChild(thinkingMsg);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+
+  // 3. Extract current active farm context to enrich prompt
+  let farmContext = null;
+  if (activeFarmId) {
+    const activeFarm = farms.find(f => f.id === activeFarmId);
+    if (activeFarm) {
+      const area = calculatePolygonArea(activeFarm.geometry);
+      const centroid = calculatePolygonCentroid(activeFarm.geometry);
+      const soilMoisture = document.getElementById('val-soil-moisture').textContent;
+      const evap = document.getElementById('val-evap').textContent;
+      const crop = document.getElementById('crop-select').value;
+
+      farmContext = {
+        name: activeFarm.name,
+        size: area,
+        centroid: `${centroid.lat}°N, ${centroid.lon}°W`,
+        crop: crop,
+        soilMoisture: soilMoisture,
+        evap: evap
+      };
+    }
+  }
+
+  // 4. Query Express API Advisor proxy
+  try {
+    const res = await fetch('/api/advisor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: messageText,
+        language: window.currentLanguage,
+        farmContext: farmContext
+      })
+    });
+
+    // Remove thinking message
+    if (thinkingMsg.parentNode) {
+      chatHistory.removeChild(thinkingMsg);
+    }
+
+    if (res.ok) {
+      const data = await res.json();
+      
+      // Append Bot response
+      const botMsg = document.createElement('div');
+      botMsg.className = 'chat-message bot';
+      botMsg.innerHTML = `<p>${data.reply}</p>`;
+      chatHistory.appendChild(botMsg);
+    } else {
+      const err = await res.json();
+      const botMsg = document.createElement('div');
+      botMsg.className = 'chat-message bot';
+      botMsg.innerHTML = `<p style="color: var(--color-danger)">Error: ${err.error || 'Failed to fetch AI advice.'}</p>`;
+      chatHistory.appendChild(botMsg);
+    }
+  } catch (err) {
+    if (thinkingMsg.parentNode) {
+      chatHistory.removeChild(thinkingMsg);
+    }
+    const botMsg = document.createElement('div');
+    botMsg.className = 'chat-message bot';
+    botMsg.innerHTML = `<p style="color: var(--color-danger)">Offline: Unable to contact AI Advisor.</p>`;
+    chatHistory.appendChild(botMsg);
+  } finally {
+    inputEl.disabled = false;
+    sendBtn.disabled = false;
+    inputEl.focus();
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
 }
 
 /**

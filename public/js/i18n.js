@@ -29,7 +29,10 @@ const TRANSLATIONS = {
     "placeholder-farm": "Farm Name...",
     "lbl-size": "Size",
     "lbl-centroid": "Location",
-    "lbl-created": "Saved On"
+    "lbl-created": "Saved On",
+    "lbl-olmo-advisor": "OLMO AI Advisor",
+    "lbl-advisor-welcome": "Welcome! I am OLMO, your wise agricultural advisor. Ask me anything about your crops, soils, or seasons!",
+    "placeholder-advisor": "Ask OLMO a question..."
   },
   ak: { // Akan (Twi)
     "lbl-title": "Ghana Kuafo Akwankyerɛ",
@@ -56,7 +59,10 @@ const TRANSLATIONS = {
     "placeholder-farm": "Afuw Din...",
     "lbl-size": "Kɛseɛ",
     "lbl-centroid": "Kuro/Beaeɛ",
-    "lbl-created": "Woakora Wɔ"
+    "lbl-created": "Woakora Wɔ",
+    "lbl-olmo-advisor": "OLMO Mmoa Nyansafoɔ",
+    "lbl-advisor-welcome": "Akwaaba! Meyɛ OLMO, w'agble ho mmoa nyansafoɔ. Bisa me biribiara a ɛfa nnɔbae, asase, anaa wiem tebea ho!",
+    "placeholder-advisor": "Bisa OLMO afutuo bi..."
   },
   ee: { // Ewe
     "lbl-title": "Ghana Agbledela Kpekpeɖeŋu",
@@ -83,7 +89,10 @@ const TRANSLATIONS = {
     "placeholder-farm": "Agblea Ƒe Ŋkɔ...",
     "lbl-size": "Lolome",
     "lbl-centroid": "Kɔƒe/Afia",
-    "lbl-created": "Dzra Ðo Wɔ"
+    "lbl-created": "Dzra Ðo Wɔ",
+    "lbl-olmo-advisor": "OLMO Agbleɖaŋuɖola",
+    "lbl-advisor-welcome": "Woezɔ! Nyea OLMO wò agbleɖaŋuɖola. Bia nyagbɔwo tso nukuwo alo ya me ƒe nɔnɔmewo ŋu!",
+    "placeholder-advisor": "Bia nyagbɔ aɖe OLMO..."
   }
 };
 
@@ -118,6 +127,10 @@ function setLanguage(lang) {
   const farmInput = document.getElementById('farm-name-input');
   if (farmInput) {
     farmInput.placeholder = TRANSLATIONS[lang]['placeholder-farm'];
+  }
+  const advisorInput = document.getElementById('advisor-input-text');
+  if (advisorInput) {
+    advisorInput.placeholder = TRANSLATIONS[lang]['placeholder-advisor'];
   }
 
   // 3. Keep active class highlighted on selector buttons
