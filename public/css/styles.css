@@ -766,11 +766,11 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Aligns hero section to the top */
   min-height: calc(100vh - var(--header-height));
   background: transparent; /* transparent to show the full-bleed video backdrop */
   overflow-y: auto;
-  padding: 60px 24px;
+  padding: 40px 24px 60px 24px; /* Crisp top alignment with comfortable bottom scroll room */
   z-index: 1;
 }
 
