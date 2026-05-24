@@ -1298,15 +1298,15 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
 
 /* Visual styling of map paths */
 .ghana-outline-path {
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 1.5px;
-  fill: rgba(94, 106, 210, 0.02);
+  stroke: rgba(94, 106, 210, 0.35); /* Prominent Brand Indigo outline */
+  stroke-width: 2px;
+  fill: rgba(94, 106, 210, 0.04);
   transition: var(--transition);
 }
 
 .hero-map-card:hover .ghana-outline-path {
-  stroke: rgba(94, 106, 210, 0.25);
-  fill: rgba(94, 106, 210, 0.04);
+  stroke: rgba(94, 106, 210, 0.55);
+  fill: rgba(94, 106, 210, 0.08);
 }
 
 .logistics-corridor-base {
