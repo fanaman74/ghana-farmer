@@ -2,7 +2,7 @@
  * Ghana Farmer Support Application - PWA Service Worker (Cache & Offline Support)
  */
 
-const CACHE_NAME = 'ghana-farmer-shell-v11';
+const CACHE_NAME = 'ghana-farmer-shell-v12';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -58,6 +58,11 @@ self.addEventListener('fetch', (event) => {
 
   // Bypass service worker caching for local Express backend REST API queries
   if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  // Bypass service worker caching for video/audio and cross-origin media streaming
+  if (event.request.destination === 'video' || event.request.destination === 'audio' || url.origin !== self.location.origin) {
     return;
   }
 
