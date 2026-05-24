@@ -55,62 +55,19 @@
 
     <!-- Home View (Animated Hero & Feature Grid) -->
     <main id="home-view" class="home-view-container">
-      <div class="hero-bg-glow"></div>
-      
-      <div class="hero-layout-split">
-        <section class="hero-section">
-          <div class="hero-logo-shimmer">🌱</div>
-          <h1 id="lbl-hero-title">Empowering Ghanaian Agriculture</h1>
-          <p id="lbl-hero-subtitle">Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.</p>
-        </section>
-
-        <!-- Right Side: Beautiful SVG Ghana Logistics Map -->
-        <div class="hero-map-card card">
-          <svg viewBox="0 0 320 460" class="hero-ghana-svg">
-            <!-- Simplified Ghana Vector Outline Path -->
-            <path class="ghana-outline-path" d="M120,40 L190,42 L240,80 L250,150 L270,220 L270,300 L250,380 L230,410 L160,430 L80,420 L75,340 L50,290 L75,210 L80,120 Z" />
-
-            <!-- Bezier Logistics Dashed Backing Tracks -->
-            <path class="logistics-corridor-base" d="M190,140 Q130,220 90,280" /> <!-- Tamale -> Techiman -->
-            <path class="logistics-corridor-base" d="M90,280 Q105,310 140,340" />  <!-- Techiman -> Kumasi -->
-            <path class="logistics-corridor-base" d="M140,340 Q190,380 230,410" /> <!-- Kumasi -> Accra -->
-            <path class="logistics-corridor-base" d="M140,340 Q100,390 80,420" />  <!-- Kumasi -> Takoradi -->
-            <path class="logistics-corridor-base" d="M80,420 Q155,430 230,410" />  <!-- Takoradi -> Accra -->
-
-            <!-- Flowing Active Dash Corridor Particles -->
-            <path class="logistics-corridor-flow" d="M190,140 Q130,220 90,280" />
-            <path class="logistics-corridor-flow" d="M90,280 Q105,310 140,340" />
-            <path class="logistics-corridor-flow" d="M140,340 Q190,380 230,410" />
-            <path class="logistics-corridor-flow" d="M140,340 Q100,390 80,420" />
-            <path class="logistics-corridor-flow" d="M80,420 Q155,430 230,410" />
-
-            <!-- Tamale Node -->
-            <g transform="translate(190, 140)">
-              <text y="-14" class="city-node-label">Tamale</text>
-            </g>
-
-            <!-- Techiman Node -->
-            <g transform="translate(90, 280)">
-              <text x="-16" y="4" class="city-node-label" style="text-anchor: end;">Techiman</text>
-            </g>
-
-            <!-- Kumasi Node -->
-            <g transform="translate(140, 340)">
-              <text x="16" y="4" class="city-node-label" style="text-anchor: start;">Kumasi</text>
-            </g>
-
-            <!-- Takoradi Node -->
-            <g transform="translate(80, 420)">
-              <text y="20" class="city-node-label">Takoradi</text>
-            </g>
-
-            <!-- Accra Node -->
-            <g transform="translate(230, 410)">
-              <text y="20" class="city-node-label">Accra</text>
-            </g>
-          </svg>
-        </div>
+      <!-- Full-Screen Cinematic Video Background -->
+      <div class="hero-video-container">
+        <video autoplay loop muted playsinline class="hero-bg-video">
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-african-farmer-working-in-field-with-hoe-41804-large.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay"></div>
       </div>
+      
+      <section class="hero-section">
+        <div class="hero-logo-shimmer">🌱</div>
+        <h1 id="lbl-hero-title">Empowering Ghanaian Agriculture</h1>
+        <p id="lbl-hero-subtitle">Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.</p>
+      </section>
 
       <section class="features-grid">
         <!-- Weather Card -->
