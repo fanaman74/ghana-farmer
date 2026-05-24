@@ -1244,8 +1244,8 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
     animation: none !important;
   }
 }
-/* Full viewport background loop video rules */
-.hero-video-container {
+/* Full viewport background image rules */
+.hero-image-container {
   position: absolute;
   top: 0;
   left: 0;
@@ -1256,13 +1256,13 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   pointer-events: none;
 }
 
-.hero-bg-video {
+.hero-bg-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.hero-video-overlay {
+.hero-image-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -1270,18 +1270,19 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   height: 100%;
   background: linear-gradient(
     180deg, 
-    rgba(8, 9, 10, 0.75) 0%, 
-    rgba(8, 9, 10, 0.6) 50%, 
+    rgba(8, 9, 10, 0.65) 0%, 
+    rgba(8, 9, 10, 0.45) 50%, 
     rgba(8, 9, 10, 0.85) 100%
   );
-  backdrop-filter: blur(3px); /* elegant glass blur overlay */
+  backdrop-filter: blur(2px); /* elegant glass blur overlay */
   z-index: -1;
 }
+
 /* Re-center hero content */
 .hero-section {
   text-align: center;
   max-width: 800px;
-  margin-bottom: 56px;
+  margin-bottom: 40px;
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1292,4 +1293,41 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   max-width: 680px;
   margin: 0 auto;
 }
+
+/* Features Section with Resources Heading */
+.features-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  z-index: 2;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-align: center;
+  position: relative;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background-color: var(--color-primary);
+  border-radius: 1px;
+}
+
 

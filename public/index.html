@@ -55,12 +55,10 @@
 
     <!-- Home View (Animated Hero & Feature Grid) -->
     <main id="home-view" class="home-view-container">
-      <!-- Full-Screen Cinematic Video Background -->
-      <div class="hero-video-container">
-        <video autoplay loop muted playsinline class="hero-bg-video">
-          <source src="videos/hero.mp4" type="video/mp4">
-        </video>
-        <div class="hero-video-overlay"></div>
+      <!-- Full-Screen Cinematic Background Image -->
+      <div class="hero-image-container">
+        <img src="images/hero-bg.png" class="hero-bg-image" alt="Women village farmers">
+        <div class="hero-image-overlay"></div>
       </div>
       
       <section class="hero-section">
@@ -69,7 +67,9 @@
         <p id="lbl-hero-subtitle">Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.</p>
       </section>
 
-      <section class="features-grid">
+      <section class="features-section">
+        <h2 id="lbl-resources-title" class="section-title">Our Resources</h2>
+        <div class="features-grid">
         <!-- Weather Card -->
         <div class="feature-nav-card" id="btn-go-weather">
           <div class="feature-nav-icon">🌦️</div>
@@ -100,6 +100,7 @@
           <h3 id="lbl-feature-advisor-title">AI Farm Advisor</h3>
           <p id="lbl-feature-advisor-desc">Instant agri advice in English, Twi, and Ewe with farm context.</p>
           <span class="feature-nav-action-indicator">➔</span>
+        </div>
         </div>
       </section>
     </main>

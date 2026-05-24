@@ -36,6 +36,7 @@ const TRANSLATIONS = {
     // Phase 2 additions
     "lbl-hero-title": "Empowering Ghanaian Agriculture",
     "lbl-hero-subtitle": "Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.",
+    "lbl-resources-title": "Our Resources",
     "lbl-feature-weather-title": "Weather & Soil Health",
     "lbl-feature-weather-desc": "6-hour cached forecasts, soil moisture, and transpiration curves.",
     "lbl-feature-ndvi-title": "Satellite Crop Health",
@@ -84,6 +85,7 @@ const TRANSLATIONS = {
     // Phase 2 additions
     "lbl-hero-title": "Yɛma Ghana Kuafoɔ Daakye So",
     "lbl-hero-subtitle": "Asase ho nsɛm mfonini, wiem tebea, nnɔbae yiedie ne OLMO AI mmoa nyansafoɔ wɔ Twi, Ewe ne Borɔfo mu.",
+    "lbl-resources-title": "Nneɛma a yɛwɔ",
     "lbl-feature-weather-title": "Wiem Tebea & Dɔteɛ",
     "lbl-feature-weather-desc": "Osu, wiem hyew ne dɔteɛ mu nsuo afutuo a ɛba dɔnhwerew 6 biara.",
     "lbl-feature-ndvi-title": "Satellite Nnɔbae Yiedie",
@@ -132,6 +134,7 @@ const TRANSLATIONS = {
     // Phase 2 additions
     "lbl-hero-title": "Wɔakpe Ðe Ghana Agbledelawo Ŋu",
     "lbl-hero-subtitle": "Anyigbahata kpɔkpɔ, ya me ƒe nɔnɔmewo, nukuwo ƒe lãmesẽ kple OLMO AI ŋuti nufiame le Ewegbe, Twigbe kple Eŋlisigbe me.",
+    "lbl-resources-title": "Míaƒe Nufiameɖoɖowo",
     "lbl-feature-weather-title": "Ya me ƒe Nɔnɔme & Anyigba",
     "lbl-feature-weather-desc": "Tsidodo, ya ƒe dzoxoxowo kple anyigba me nsuo ƒe liƒowo le gafo 6 me.",
     "lbl-feature-ndvi-title": "Satellite Nuku Lãmesẽ",
