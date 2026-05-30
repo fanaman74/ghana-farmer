@@ -196,6 +196,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   searchInput.addEventListener('input', handleSearchInput);
   searchInput.addEventListener('keydown', handleSearchKeydown);
   document.getElementById('btn-map-search').addEventListener('click', handleMapSearch);
+
+  // Dashboard Tab Switching click handlers
+  document.querySelectorAll('.map-tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tabId = e.currentTarget.getAttribute('data-tab');
+      switchTab(tabId);
+    });
+  });
+
+  // NDVI Anomaly AI Consultation CTA button
+  const ndviCtaBtn = document.getElementById('btn-ndvi-anomaly-cta');
+  if (ndviCtaBtn) {
+    ndviCtaBtn.addEventListener('click', () => {
+      const activeLang = window.currentLanguage || 'en';
+      let promptText = "I noticed a vegetation crop vigor NDVI anomaly during the peak wet season on my farm. What are the recommended diagnostics and treatments for Fall Armyworm or water-logging?";
+      if (activeLang === 'ak') {
+        promptText = "Mahu sɛ wiem nsakyerae nnɔbae yiedie kɔ fam wɔ m'afuw so wiem asutɔ bere yi mu. Afutuo bɛn na wode bɛma me fa Fall Armyworm anaa asase mu nsuo dodo ho?";
+      } else if (activeLang === 'ee') {
+        promptText = "Mede dzesi be nye agble nukuwo le gbegblẽm le tsidodo ƒe nɔnɔme sia me. Aɖaŋuɖoɖo kawo le wò si tso nuku dɔlelewo alo Fall Armyworm gbegblẽnuwo ŋuti?";
+      }
+      sendAdvisorMessage(promptText);
+    });
+  }
+
+  // Yield Gap Calculator trigger
+  const calcYieldBtn = document.getElementById('btn-calculate-yield-gap');
+  if (calcYieldBtn) {
+    calcYieldBtn.addEventListener('click', () => {
+      calculateYieldGap();
+    });
+  }
 });
 
 /**
@@ -456,6 +487,15 @@ async function handleFarmSelection(farm) {
   // Populate dynamic cards
   updateFarmDetailsCard(farm);
 
+  // Reset yield gap calculations when switching farms
+  const inputEl = document.getElementById('input-farmer-yield');
+  if (inputEl) inputEl.value = '';
+  const resultsContainer = document.getElementById('yield-estimator-results');
+  if (resultsContainer) resultsContainer.classList.add('hidden');
+
+  // Default switch to weather tab on selecting a new farm
+  switchTab('weather');
+
   // Show bottom details panel below Leaflet map
   const bottomDetails = document.getElementById('map-bottom-details');
   if (bottomDetails) {
@@ -509,9 +549,12 @@ async function fetchWeather(farmId) {
     // Set soil moisture and evapotranspiration text values
     const latestMoisture = data.hourly.soil_moisture_0_to_1cm[0];
     const latestEvap = data.hourly.et0_fao_evapotranspiration[0];
+    const rainForecastList = data.daily.precipitation_sum;
 
     document.getElementById('val-soil-moisture').textContent = latestMoisture !== undefined ? `${latestMoisture} m³/m³` : '--';
     document.getElementById('val-evap').textContent = latestEvap !== undefined ? `${latestEvap} mm` : '--';
+
+    calculateSowingSuitability(latestMoisture, rainForecastList);
 
     renderWeatherChart(data.daily);
   } catch (err) {
@@ -542,6 +585,8 @@ async function fetchNDVI(farmId) {
       const percentagePosition = Math.min(Math.max(latestNDVI * 100, 0), 100);
       sliderIndicator.style.left = `${percentagePosition}%`;
     }
+
+    analyzeNDVI(latestNDVI, data);
 
     renderNdviChart(data);
   } catch (err) {
@@ -582,6 +627,12 @@ function resetDetailsPanels() {
   document.getElementById('val-ndvi').textContent = '--';
   const sliderIndicator = document.getElementById('ndvi-gauge-indicator');
   if (sliderIndicator) sliderIndicator.style.left = `0%`;
+
+  // Reset yield calculator inputs and results
+  const inputEl = document.getElementById('input-farmer-yield');
+  if (inputEl) inputEl.value = '';
+  const resultsContainer = document.getElementById('yield-estimator-results');
+  if (resultsContainer) resultsContainer.classList.add('hidden');
 
   // Hide bottom details below the map
   const bottomDetails = document.getElementById('map-bottom-details');
@@ -1207,3 +1258,333 @@ function toggleTtsButtons(lang) {
 
 window.speakMessage = speakMessage;
 window.toggleTtsButtons = toggleTtsButtons;
+window.switchTab = switchTab;
+
+/**
+ * Switches the active dashboard tab pane.
+ * @param {string} tabId - 'weather' | 'ndvi' | 'yield'
+ */
+function switchTab(tabId) {
+  // 1. Update tab buttons active classes
+  document.querySelectorAll('.map-tab-btn').forEach(btn => {
+    if (btn.getAttribute('data-tab') === tabId) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // 2. Show only the corresponding card pane
+  document.querySelectorAll('.bottom-card[data-tab]').forEach(card => {
+    if (card.getAttribute('data-tab') === tabId) {
+      card.classList.add('active-tab-pane');
+    } else {
+      card.classList.remove('active-tab-pane');
+    }
+  });
+
+  // Trigger Leaflet map resize re-evaluation in case bounding boxes changed
+  invalidateMapSize();
+}
+
+/**
+ * Calculates sowing suitability based on soil moisture and upcoming rainfall.
+ */
+function calculateSowingSuitability(soilMoisture, dailyRainfallList) {
+  if (soilMoisture === undefined || isNaN(soilMoisture)) return;
+
+  // Sowing suitability base calculation
+  let score = 30; // base score
+
+  // 1. Soil moisture contribution
+  if (soilMoisture >= 0.25 && soilMoisture <= 0.45) {
+    score += 40; // Optimal range
+  } else if (soilMoisture > 0.15 && soilMoisture < 0.25) {
+    score += 15; // Moderate/dryish
+  } else if (soilMoisture > 0.45 && soilMoisture <= 0.55) {
+    score += 15; // Slightly too wet
+  } // Very dry (<0.15) or saturated (>0.55) gives 0 extra points
+
+  // 2. Next 3 days rainfall forecast sum
+  const next3DaysRain = dailyRainfallList ? dailyRainfallList.slice(0, 3).reduce((a, b) => a + b, 0) : 0;
+  if (next3DaysRain >= 5 && next3DaysRain <= 25) {
+    score += 30; // Perfect light-to-moderate rain forecast to nurture seeds
+  } else if (next3DaysRain > 25 && next3DaysRain <= 45) {
+    score += 10; // Slightly heavy rain, could cause minor runoff
+  } else if (next3DaysRain > 45) {
+    score -= 20; // Heavy rains forecasted! Warning: danger of seed washout!
+  } else {
+    // No rain
+    score += 5; // Dry but safe
+  }
+
+  // Constrain between 10% and 95%
+  score = Math.min(Math.max(score, 10), 95);
+
+  // Update UI circular progress bar
+  const valueEl = document.getElementById('sowing-gauge-value');
+  const fillEl = document.getElementById('sowing-gauge-fill');
+  const badgeEl = document.getElementById('sowing-suitability-badge');
+  const textEl = document.getElementById('sowing-advisory-text');
+
+  if (valueEl) valueEl.textContent = `${score}%`;
+  if (fillEl) {
+    const deg = (score / 100) * 360 - 45;
+    fillEl.style.transform = `rotate(${deg}deg)`;
+  }
+
+  // Get status level and colors
+  let status = 'optimal';
+  let badgeText = 'Optimal';
+  if (score < 40) {
+    status = 'critical';
+    badgeText = 'Poor';
+  } else if (score < 70) {
+    status = 'warning';
+    badgeText = 'Fair';
+  }
+
+  if (badgeEl) {
+    badgeEl.className = `sowing-score-badge ${status}`;
+    // Localize status
+    let localizedBadgeText = badgeText;
+    if (window.currentLanguage === 'ak') {
+      localizedBadgeText = status === 'optimal' ? 'Pa Pa Pa' : (status === 'warning' ? 'Bɔkɔɔ' : 'Nnyɛ Koraa');
+    } else if (window.currentLanguage === 'ee') {
+      localizedBadgeText = status === 'optimal' ? 'Enyo Ŋutɔ' : (status === 'warning' ? 'Enyo' : 'Vɔ̃ɖi');
+    }
+    badgeEl.textContent = localizedBadgeText;
+  }
+
+  // Formulate dynamic agronomic recommendation advisory texts
+  let advisoryText = '';
+  if (window.currentLanguage === 'ak') { // Twi
+    if (status === 'optimal') {
+      advisoryText = `Dɔteɛ mu nsuo (${soilMoisture} m³/m³) ne wiem tebea yɛ pa kɛseɛ ma nnɔbae dua! April/May asutɔ bere yi mu yɛ bere pa a wode bɛdua aburo anaa nnɔbae foforo. Osu a ɛbɛtɔ bɔkɔɔ nso bɛboa mma nnɔbae no fifi ntɛm.`;
+    } else if (status === 'warning') {
+      advisoryText = `Asase no tebea yɛ bɔkɔɔ. Dɔteɛ no yɛ kyeneee kakra anaa osu a ɛbɛtɔ no dɔɔso. Sɛ wodua a, hwɛ spacing no yie anaa twɛn nna kakra na asase no mu nsuo ahotew pa ara.`;
+    } else {
+      advisoryText = `Asiane! Dɔteɛ no yɛ kyeneee dodo (${soilMoisture} m³/m³) anaa osu kɛseɛ a ɛbɛtɔ bɛsɛe aba no. Yɛsrɛ wo, twɛn kosi sɛ dɔteɛ no bɛyɛ mmerɛw anaa wiem ahotew pa ara ansa na woadua.`;
+    }
+  } else if (window.currentLanguage === 'ee') { // Ewe
+    if (status === 'optimal') {
+      advisoryText = `Anyigba me tsitsi (${soilMoisture} m³/m³) sɔ kplikpa na nugbledodo! Dame ya me nɔnɔmewo le nyuie nutɔ na bli dodo. Tsidodo si le gbɔgblɔm la akpe ɖe nukuwo ŋu ne woagblẽ kaba.`;
+    } else if (status === 'warning') {
+      advisoryText = `Anyigba ƒe nɔnɔme sɔ va se ɖe aƒe aɖe me. Anyigba la ƒu kura alo tsidodo nɔ gbɔgblɔm. Ne de nukuwo la, le ŋku ɖe wo lolome ŋuti alo lalã vie na anyigba nafa nyuie.`;
+    } else {
+      advisoryText = `Nuxɔxlɔ̃! Anyigba ƒe tsitsi sɔbɔ ɖe anyi gblẽ (${soilMoisture} m³/m³) alo tsidodo kpli tsi kɛsewo le nugblẽm na nuku dodo. Mia lalã tsitsitsi na ya me nɔnɔme naɖɔ ɖo.`;
+    }
+  } else { // English
+    if (status === 'optimal') {
+      advisoryText = `Soil moisture (${soilMoisture} m³/m³) and upcoming moderate rain are optimal for planting! This is an ideal sowing window to maximize seed germination rates.`;
+    } else if (status === 'warning') {
+      advisoryText = `Planting conditions are fair. Soil moisture is slightly dry or excessive rainfall is expected. Plant with care or consider waiting 2-3 days for more stable soil conditions.`;
+    } else {
+      advisoryText = `Planting is not recommended. Soil moisture is extremely low (${soilMoisture} m³/m³) or upcoming heavy rainfall poses a severe risk of washing away seeds. Wait for better weather.`;
+    }
+  }
+
+  if (textEl) textEl.textContent = advisoryText;
+}
+
+/**
+ * Analyzes vegetation health indices and triggers anomaly warnings.
+ */
+function analyzeNDVI(latestNDVI, historicalData) {
+  if (latestNDVI === undefined || isNaN(latestNDVI)) return;
+
+  const alertContainer = document.getElementById('ndvi-anomaly-alert');
+  const iconEl = document.getElementById('ndvi-anomaly-icon');
+  const titleEl = document.getElementById('lbl-ndvi-status-title');
+  const descEl = document.getElementById('val-ndvi-status-desc');
+  const ctaBtn = document.getElementById('btn-ndvi-anomaly-cta');
+
+  // Classification & Anomaly thresholds
+  let vigorState = 'optimal';
+  let titleText = 'Optimal Vigor';
+  let descText = 'Crop leaf density is at peak healthy vegetative stages.';
+  let iconText = '🌿';
+
+  if (latestNDVI < 0.2) {
+    vigorState = 'bare';
+    titleText = 'Bare Soil / Unvegetated';
+    descText = 'Field is recently harvested, plowed, or cleared of all crop residues.';
+    iconText = '🚜';
+  } else if (latestNDVI < 0.45) {
+    vigorState = 'stressed';
+    titleText = 'Moderate to Stressed Vigor';
+    descText = 'Crops show sparse foliage. Could indicate low nutrient levels or moisture stress.';
+    iconText = '🍂';
+  }
+
+  // Anomaly Detection: check if there's a drop compared to historical average or wet-season average
+  const today = new Date();
+  const currentMonth = today.getMonth(); // 0 - 11
+  const isWetSeason = (currentMonth >= 4 && currentMonth <= 9); // May to October
+
+  let isAnomaly = false;
+  if (isWetSeason && latestNDVI < 0.45) {
+    isAnomaly = true;
+    vigorState = 'anomaly';
+    titleText = '⚠️ Wet-Season Crop Vigor Anomaly!';
+    descText = 'Alert: Crop leaf coverage is critically low during peak tropical wet season! This indicates severe localized crop stress, possible Fall Armyworm infestation, or heavy water-logging.';
+    iconText = '⚠️';
+  }
+
+  // Localize text output
+  if (window.currentLanguage === 'ak') { // Twi
+    if (vigorState === 'optimal') {
+      titleText = 'Nnɔbae Yiedie Pa';
+      descText = 'W\'afuw nnɔbae ahaban mu yɛ kɛseɛ na ɛyɛ green pa ara. Wiem tebea ne asase aduane nso yɛ kɛseɛ.';
+      iconText = '🌿';
+    } else if (vigorState === 'bare') {
+      titleText = 'Asase Kyeneee / Asase Ahotew';
+      descText = 'Asase no so nnɔbae koraa. Ɛbɛtumi ayɛ sɛ woatwa nnɔbae anaa woaprow asase no foforo.';
+      iconText = '🚜';
+    } else if (vigorState === 'stressed') {
+      titleText = 'Nnɔbae Ahaban mu Yɛ Mmerɛw';
+      descText = 'Nnɔbae ahaban no bi refi ase reyɛ yellow na ɛnfififi ntɛm. Hwɛ asase mu aduane anaa nsuo yie.';
+      iconText = '🍂';
+    } else if (vigorState === 'anomaly') {
+      titleText = '⚠️ Wiem Nsakyerae Nnɔbae Asia!';
+      descText = 'Kokobrane! Osu tɔ bere yi mu nso w\'afuw yiedie su yɛ mmerɛw dodo! Ɛbɛtumi ayɛ Fall Armyworm mmoawaɔsɛe anaa nsuo a ɛkora dodo wɔ asase mu.';
+      iconText = '⚠️';
+    }
+  } else if (window.currentLanguage === 'ee') { // Ewe
+    if (vigorState === 'optimal') {
+      titleText = 'Nugble Lãmesẽ Kplikpa';
+      descText = 'Nukuwo le lãmesẽ kple nuku aɖaŋu me nyuie ŋutɔ. Anyigba me nsuo sɔ kplikpa na wo lolome.';
+      iconText = '🌿';
+    } else if (vigorState === 'bare') {
+      titleText = 'Anyigba Ƒuƒu / Harvest Wɔwɔ';
+      descText = 'Nuku aɖeke le anyigba dzi o. Anyigbahata ƒo anyi kpoo alo Harvest nya wɔwɔ vɔ.';
+      iconText = '🚜';
+    } else if (vigorState === 'stressed') {
+      titleText = 'Nuku Lãmesẽ Le Gbegblẽm';
+      descText = 'Nuku ahabanwo le yellow-m alo tsidodo le anyigba me gbegblẽm na wo kaba.';
+      iconText = '🍂';
+    } else if (vigorState === 'anomaly') {
+      titleText = '⚠️ Agble Nuku Gbegblẽ Kɛsewo!';
+      descText = 'Nuxɔxlɔ̃! Le tsidodo ƒe agblenɔnɔme me na nukuwo ƒe lãmesẽ gblẽ dodo! Mate ŋu anye nuku dɔlelewo alo Fall Armyworm mmoawawo ƒe agblenugblẽ.';
+      iconText = '⚠️';
+    }
+  }
+
+  // Update UI Elements
+  if (iconEl) iconEl.textContent = iconText;
+  if (titleEl) titleEl.textContent = titleText;
+  if (descEl) descEl.textContent = descText;
+
+  if (alertContainer) {
+    if (vigorState === 'optimal') {
+      alertContainer.className = 'ndvi-anomaly-alert healthy';
+      alertContainer.style.background = '';
+      alertContainer.style.borderColor = '';
+    } else if (vigorState === 'anomaly') {
+      alertContainer.className = 'ndvi-anomaly-alert';
+      alertContainer.style.background = 'rgba(239, 68, 68, 0.08)';
+      alertContainer.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+    } else {
+      alertContainer.className = 'ndvi-anomaly-alert';
+      alertContainer.style.background = 'rgba(234, 179, 8, 0.06)';
+      alertContainer.style.borderColor = 'rgba(234, 179, 8, 0.2)';
+    }
+  }
+
+  // Enable/Disable AI CTA
+  if (ctaBtn) {
+    if (vigorState === 'anomaly' || vigorState === 'stressed') {
+      ctaBtn.classList.remove('hidden');
+    } else {
+      ctaBtn.classList.add('hidden');
+    }
+  }
+}
+
+/**
+ * Calculates Yield Gap and Profitability Returns in Ghana Cedis.
+ */
+function calculateYieldGap() {
+  const inputEl = document.getElementById('input-farmer-yield');
+  const unitEl = document.getElementById('select-harvest-unit');
+  const resultsContainer = document.getElementById('yield-estimator-results');
+  const gapEl = document.getElementById('val-result-yield-gap');
+  const valueEl = document.getElementById('val-result-est-value');
+  const adviceEl = document.getElementById('yield-estimator-advice');
+
+  if (!inputEl || !activeFarmId) return;
+
+  const rawVal = parseFloat(inputEl.value);
+  if (isNaN(rawVal) || rawVal < 0) return;
+
+  const activeFarm = farms.find(f => f.id === activeFarmId);
+  if (!activeFarm) return;
+
+  const crop = document.getElementById('crop-select').value;
+  
+  // 1. Get 2024 Benchmark Yield
+  const benchmarks = { maize: 2.32, rice: 3.15, cassava: 22.4, cocoa: 0.58 };
+  const benchmarkYield = benchmarks[crop] || 2.3;
+
+  // 2. Convert Farmer yield to Tonnes per Hectare
+  let farmerYieldTonnesHa = rawVal;
+  if (unitEl.value === 'bags_acre') {
+    // 1 bag = 0.1 tonnes. 1 hectare = 2.471 acres.
+    farmerYieldTonnesHa = rawVal * 0.1 * 2.471;
+  }
+
+  // 3. Compute Yield Gap
+  const yieldGap = benchmarkYield - farmerYieldTonnesHa;
+
+  // 4. Compute Estimated Revenue in Ghana Cedis (GHS)
+  // Average crop wholesale market value per tonne in Ghana GHS
+  const cropPricesGHS = { maize: 4500, rice: 8000, cassava: 2200, cocoa: 48000 };
+  const pricePerTonne = cropPricesGHS[crop] || 4000;
+
+  const farmAreaHectares = calculatePolygonArea(activeFarm.geometry);
+  const totalTonnesHarvested = farmerYieldTonnesHa * farmAreaHectares;
+  const estimatedMarketValue = totalTonnesHarvested * pricePerTonne;
+
+  // 5. Render results
+  if (resultsContainer) resultsContainer.classList.remove('hidden');
+
+  if (gapEl) {
+    gapEl.textContent = `${yieldGap.toFixed(2)} t/ha`;
+    if (yieldGap > 0) {
+      gapEl.className = 'yield-result-val highlight-red';
+    } else {
+      gapEl.className = 'yield-result-val highlight-green';
+    }
+  }
+
+  if (valueEl) {
+    valueEl.textContent = `GHS ${estimatedMarketValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+  }
+
+  // 6. Localized agronomic profitability advisor text
+  let advisoryAdvice = '';
+  if (window.currentLanguage === 'ak') { // Twi
+    if (yieldGap > 0) {
+      const lostRevenue = yieldGap * farmAreaHectares * pricePerTonne;
+      advisoryAdvice = `💡 W'afuw Yield Gap yɛ ${yieldGap.toFixed(2)} t/ha compared to Ghana nsenkyerɛnne. Sɛ wode hybrid nnɔbae aba ne spacing pa di dwuma na woasi yield gap yi ano a, wobe nya **GHS ${lostRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}** foforo wɔ w'afuw (${farmAreaHectares} ha) so!`;
+    } else {
+      advisoryAdvice = `🏆 Incredibly done! W'afuw abupuo sɔso sen Ghana FAOSTAT average yield. Woyɛ smallholder kuafoɔ pa ara! Kora w'asase yiedie ne nnɔbae kora pa no so.`;
+    }
+  } else if (window.currentLanguage === 'ee') { // Ewe
+    if (yieldGap > 0) {
+      const lostRevenue = yieldGap * farmAreaHectares * pricePerTonne;
+      advisoryAdvice = `💡 Wò Nugblekpɔkpɔ kpoɖodo yɛ ${yieldGap.toFixed(2)} t/ha sɔsɔ kple national benchmark. Ne de hybrid nukuwo ne spacing nyuie le agblea (${farmAreaHectares} ha) dzi la, àkpɔ **GHS ${lostRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}** foforo le viɖe me!`;
+    } else {
+      advisoryAdvice = `🏆 Incredibly done! Wò nugblekpɔkpɔ sɔbɔ wu national average yield. Enye agbledela gã nutɔ! Dzra anyigba lãmesẽ sia ɖo daadaa.`;
+    }
+  } else { // English
+    if (yieldGap > 0) {
+      const lostRevenue = yieldGap * farmAreaHectares * pricePerTonne;
+      advisoryAdvice = `💡 Your yield gap is ${yieldGap.toFixed(2)} t/ha below the national average. By using certified hybrid seeds and optimal crop spacing, you could unlock an additional **GHS ${lostRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}** in total revenue on your ${farmAreaHectares} ha farm!`;
+    } else {
+      advisoryAdvice = `🏆 Outstanding! Your farm yields exceed the national FAOSTAT average benchmark by ${Math.abs(yieldGap).toFixed(2)} t/ha! You are performing at peak smallholder efficiency.`;
+    }
+  }
+
+  if (adviceEl) adviceEl.innerHTML = advisoryAdvice;
+}

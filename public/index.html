@@ -213,8 +213,15 @@
             </div>
           </div>
 
+          <!-- Dynamic SPA Dashboard Tab Bar -->
+          <div class="map-nav-tabs">
+            <button class="map-tab-btn active" data-tab="weather" id="btn-tab-weather">🌦️ Weather & Soil</button>
+            <button class="map-tab-btn" data-tab="ndvi" id="btn-tab-ndvi">🛰️ Crop Health</button>
+            <button class="map-tab-btn" data-tab="yield" id="btn-tab-yield">📊 Yield Benchmarks</button>
+          </div>
+
           <!-- Weather and Soil Forecast Card -->
-          <div class="card bottom-card weather-card scrollable">
+          <div class="card bottom-card weather-card scrollable active-tab-pane" data-tab="weather">
             <h2 id="lbl-weather-climate">Weather & Climate</h2>
             <div id="weather-content" class="hidden">
               <div class="weather-metrics">
@@ -230,12 +237,30 @@
               <div class="chart-container">
                 <canvas id="weatherChart"></canvas>
               </div>
+              
+              <!-- Unique Feature: Planting Suitability Sowing Advisor Widget -->
+              <div class="sowing-advisor-widget">
+                <div class="sowing-header">
+                  <span class="sowing-title">🌱 <span id="lbl-sowing-advisor-title">Sowing Suitability Advisor</span></span>
+                  <span id="sowing-suitability-badge" class="sowing-score-badge optimal">Optimal</span>
+                </div>
+                <div class="sowing-calculator-body">
+                  <div class="sowing-gauge-container">
+                    <div class="sowing-gauge-circle"></div>
+                    <div id="sowing-gauge-fill" class="sowing-gauge-fill"></div>
+                    <span id="sowing-gauge-value" class="sowing-gauge-value">--%</span>
+                  </div>
+                  <div id="sowing-advisory-text" class="sowing-advisory-details">
+                    Select a farm to calculate seed sowing suitability.
+                  </div>
+                </div>
+              </div>
             </div>
             <p class="select-hint" id="lbl-select-farm-hint-weather">Select a farm to view weather.</p>
           </div>
 
           <!-- Vegetation NDVI Health Card -->
-          <div class="card bottom-card vegetation-card scrollable">
+          <div class="card bottom-card vegetation-card scrollable" data-tab="ndvi">
             <h2 id="lbl-crop-health">Crop Health (NDVI)</h2>
             <div id="ndvi-content" class="hidden">
               <!-- NDVI Health Gauge -->
@@ -252,12 +277,26 @@
               <div class="chart-container">
                 <canvas id="ndviChart"></canvas>
               </div>
+              
+              <!-- Unique Feature: Vegetation Health Classifier & Anomaly Alert -->
+              <div class="ndvi-anomaly-widget">
+                <div id="ndvi-anomaly-alert" class="ndvi-anomaly-alert healthy">
+                  <span id="ndvi-anomaly-icon" class="ndvi-anomaly-icon">🌿</span>
+                  <div class="ndvi-anomaly-details">
+                    <span id="lbl-ndvi-status-title" class="ndvi-anomaly-title">Optimal Vigor</span>
+                    <span id="val-ndvi-status-desc" class="ndvi-anomaly-desc">Crop leaf density is at peak healthy vegetative stages.</span>
+                  </div>
+                </div>
+                <button id="btn-ndvi-anomaly-cta" class="ndvi-anomaly-cta-btn hidden">
+                  🤖 <span id="lbl-ndvi-anomaly-cta">Consult OLMO AI about this anomaly</span>
+                </button>
+              </div>
             </div>
             <p class="select-hint" id="lbl-select-farm-hint-ndvi">Select a farm to view NDVI health.</p>
           </div>
 
           <!-- FAOSTAT Historical Benchmarks Card -->
-          <div class="card bottom-card benchmark-card scrollable">
+          <div class="card bottom-card benchmark-card scrollable" data-tab="yield">
             <h2 id="lbl-yield-benchmarks">Ghana Yield Benchmarks</h2>
             <div class="benchmark-controls">
               <select id="crop-select" class="form-select">
@@ -269,6 +308,43 @@
             </div>
             <div class="chart-container">
               <canvas id="benchmarkChart"></canvas>
+            </div>
+            
+            <!-- Unique Feature: Interactive Yield Gap & GHS Profitability Estimator -->
+            <div class="yield-estimator-widget">
+              <div class="yield-estimator-header">
+                💰 <span id="lbl-yield-estimator-title">Yield Gap & Profitability Estimator</span>
+              </div>
+              <div class="yield-estimator-inputs">
+                <div class="yield-input-group">
+                  <label id="lbl-your-harvest">Your Harvest</label>
+                  <input type="number" id="input-farmer-yield" class="form-input" placeholder="Value..." min="0" step="0.1">
+                </div>
+                <div class="yield-input-group">
+                  <label id="lbl-harvest-unit">Unit</label>
+                  <select id="select-harvest-unit" class="form-select">
+                    <option value="tonnes_ha">Tonnes / Hectare</option>
+                    <option value="bags_acre">Bags (100kg) / Acre</option>
+                  </select>
+                </div>
+                <button id="btn-calculate-yield-gap" class="btn btn-primary">Calc</button>
+              </div>
+              
+              <div id="yield-estimator-results" class="yield-estimator-results hidden">
+                <div class="yield-results-grid">
+                  <div class="yield-result-item">
+                    <span class="yield-result-label" id="lbl-result-yield-gap">Yield Gap</span>
+                    <span id="val-result-yield-gap" class="yield-result-val">--</span>
+                  </div>
+                  <div class="yield-result-item">
+                    <span class="yield-result-label" id="lbl-result-est-value">Est. Market Value</span>
+                    <span id="val-result-est-value" class="yield-result-val highlight-green">--</span>
+                  </div>
+                </div>
+                <div id="yield-estimator-advice" class="yield-estimator-advice">
+                  Enter harvest to compute estimated market returns.
+                </div>
+              </div>
             </div>
           </div>
         </div>

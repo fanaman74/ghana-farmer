@@ -68,7 +68,15 @@ const TRANSLATIONS = {
     "lbl-tts-select-voice": "Loading System Speech Voices...",
     "toast-select-farm-weather": "Please select or draw a farm first to view weather data!",
     "toast-select-farm-ndvi": "Please select or draw a farm first to track Sentinel satellite crop health!",
-    "toast-select-farm-yield": "Please select or draw a farm first to compare yield benchmarks!"
+    "toast-select-farm-yield": "Please select or draw a farm first to compare yield benchmarks!",
+    "lbl-sowing-advisor-title": "Sowing Suitability Advisor",
+    "lbl-ndvi-status-title": "Optimal Vigor",
+    "lbl-ndvi-anomaly-cta": "Consult OLMO AI about this anomaly",
+    "lbl-yield-estimator-title": "Yield Gap & Profitability Estimator",
+    "lbl-your-harvest": "Your Harvest",
+    "lbl-harvest-unit": "Unit",
+    "lbl-result-yield-gap": "Yield Gap",
+    "lbl-result-est-value": "Est. Market Value"
   },
   ak: { // Akan (Twi)
     "lbl-title": "Ghana Kuafo Akwankyerɛ",
@@ -134,7 +142,15 @@ const TRANSLATIONS = {
     "lbl-tts-select-voice": "Rehwehwɛ Wiem Kasa...",
     "toast-select-farm-weather": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ wiem tebea!",
     "toast-select-farm-ndvi": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ afuw yiedie (NDVI) ho nsɛm!",
-    "toast-select-farm-yield": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ nnɔbae twa ho nsɛso!"
+    "toast-select-farm-yield": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ nnɔbae twa ho nsɛso!",
+    "lbl-sowing-advisor-title": "Nnɔbae Dua Ho Afutuo",
+    "lbl-ndvi-status-title": "Nnɔbae Yiedie Pa",
+    "lbl-ndvi-anomaly-cta": "Bisa OLMO AI afutuo fa wiem nsakyerae yi ho",
+    "lbl-yield-estimator-title": "Nnɔbae Twa Nsɛso & Mfaso Calculator",
+    "lbl-your-harvest": "Wo Nnɔbae a Wotwae",
+    "lbl-harvest-unit": "Nsɛso kwan",
+    "lbl-result-yield-gap": "Nnɔbae Twa Nsɛso",
+    "lbl-result-est-value": "Mfaso a Wotumi Kora"
   },
   ee: { // Ewe
     "lbl-title": "Ghana Agbledela Kpekpeɖeŋu",
@@ -200,7 +216,15 @@ const TRANSLATIONS = {
     "lbl-tts-select-voice": "Le Gbe Lalam...",
     "toast-select-farm-weather": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ ya me ƒe nɔnɔme!",
     "toast-select-farm-ndvi": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ NDVI nuku lãmesẽ!",
-    "toast-select-farm-yield": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ nuku sɔsɔwo!"
+    "toast-select-farm-yield": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ nuku sɔsɔwo!",
+    "lbl-sowing-advisor-title": "Nugbledodo Ƒe Kpekpeɖeŋu",
+    "lbl-ndvi-status-title": "Nugble Lãmesẽ Kplikpa",
+    "lbl-ndvi-anomaly-cta": "Bia ya me nɔnɔme gbegblẽ sia ƒe aɖaŋuɖoɖo OLMO AI",
+    "lbl-yield-estimator-title": "Nugblekpɔkpɔ Kudodo & Viɖekpɔkpɔ",
+    "lbl-your-harvest": "Wò Nugblekpɔkpɔ",
+    "lbl-harvest-unit": "Lolome",
+    "lbl-result-yield-gap": "Nugblekpɔkpɔ Kpododo",
+    "lbl-result-est-value": "Viɖe si Kpɔm Nɔ"
   }
 };
 
