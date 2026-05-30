@@ -434,7 +434,7 @@ Limit your response to a maximum of 250 words so it is concise and easy to read 
         'X-Title': 'Ghana Farmer Support'
       },
       body: JSON.stringify({
-        model: 'allenai/olmo-3-32b-think',
+        model: 'allenai/olmo-3.1-32b-think',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }
