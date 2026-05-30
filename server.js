@@ -526,7 +526,7 @@ app.post('/api/tts', async (req, res) => {
   }
 
   try {
-    const ttsUrl = 'https://translation.ghananlp.org/tts/v1/tts';
+    const ttsUrl = 'https://translation-api.ghananlp.org/tts/v1/tts';
     
     const response = await fetch(ttsUrl, {
       method: 'POST',
