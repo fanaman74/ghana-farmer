@@ -65,7 +65,10 @@ const TRANSLATIONS = {
     "btn-label-ndvi": "Explore now",
     "btn-label-yield": "Explore now",
     "btn-label-advisor": "Explore now",
-    "lbl-tts-select-voice": "Loading System Speech Voices..."
+    "lbl-tts-select-voice": "Loading System Speech Voices...",
+    "toast-select-farm-weather": "Please select or draw a farm first to view weather data!",
+    "toast-select-farm-ndvi": "Please select or draw a farm first to track Sentinel satellite crop health!",
+    "toast-select-farm-yield": "Please select or draw a farm first to compare yield benchmarks!"
   },
   ak: { // Akan (Twi)
     "lbl-title": "Ghana Kuafo Akwankyerɛ",
@@ -128,7 +131,10 @@ const TRANSLATIONS = {
     "btn-label-ndvi": "Hwehwɛ mu",
     "btn-label-yield": "Hwehwɛ mu",
     "btn-label-advisor": "Hwehwɛ mu",
-    "lbl-tts-select-voice": "Rehwehwɛ Wiem Kasa..."
+    "lbl-tts-select-voice": "Rehwehwɛ Wiem Kasa...",
+    "toast-select-farm-weather": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ wiem tebea!",
+    "toast-select-farm-ndvi": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ afuw yiedie (NDVI) ho nsɛm!",
+    "toast-select-farm-yield": "Kyerɛ afuw bi anaa twetwe afuw hyeɛ ansa na woatumi ahwɛ nnɔbae twa ho nsɛso!"
   },
   ee: { // Ewe
     "lbl-title": "Ghana Agbledela Kpekpeɖeŋu",
@@ -191,7 +197,10 @@ const TRANSLATIONS = {
     "btn-label-ndvi": "Dii tsitotsito",
     "btn-label-yield": "Dii tsitotsito",
     "btn-label-advisor": "Dii tsitotsito",
-    "lbl-tts-select-voice": "Le Gbe Lalam..."
+    "lbl-tts-select-voice": "Le Gbe Lalam...",
+    "toast-select-farm-weather": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ ya me ƒe nɔnɔme!",
+    "toast-select-farm-ndvi": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ NDVI nuku lãmesẽ!",
+    "toast-select-farm-yield": "Ti agble aɖe alo de liƒo na agble aɖe kpɔ gbã ne nakpɔ nuku sɔsɔwo!"
   }
 };
 

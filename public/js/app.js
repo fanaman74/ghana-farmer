@@ -186,10 +186,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-header-home').addEventListener('click', () => navigateToView('home'));
   document.getElementById('btn-back-home').addEventListener('click', () => navigateToView('home'));
 
-  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard'));
-  document.getElementById('btn-go-ndvi').addEventListener('click', () => navigateToView('dashboard'));
-  document.getElementById('btn-go-yield').addEventListener('click', () => navigateToView('dashboard'));
-  document.getElementById('btn-go-advisor').addEventListener('click', () => navigateToView('dashboard'));
+  document.getElementById('btn-go-weather').addEventListener('click', () => navigateToView('dashboard', 'weather'));
+  document.getElementById('btn-go-ndvi').addEventListener('click', () => navigateToView('dashboard', 'ndvi'));
+  document.getElementById('btn-go-yield').addEventListener('click', () => navigateToView('dashboard', 'yield'));
+  document.getElementById('btn-go-advisor').addEventListener('click', () => navigateToView('dashboard', 'advisor'));
 
   // Ghana location search triggers
   const searchInput = document.getElementById('map-search-input');
@@ -734,11 +734,99 @@ function updateNetworkStatus() {
  */
 
 /**
+ * Displays a premium custom floating notification banner.
+ */
+function showNotification(message, type = 'info') {
+  const existing = document.getElementById('app-toast-notification');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'app-toast-notification';
+  toast.className = `toast-banner toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">💡</span>
+    <span class="toast-message">${message}</span>
+  `;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 400);
+  }, 4500);
+}
+
+/**
+ * Focuses and smoothly scrolls the user interface to a specific dashboard section,
+ * flashing the container with a premium spotlight glow.
+ */
+function handleSectionFocus(target) {
+  // Clear any existing active glows
+  document.querySelectorAll('.highlight-glow').forEach(el => {
+    el.classList.remove('highlight-glow');
+  });
+
+  if (target === 'advisor') {
+    const advisorCard = document.querySelector('.advisor-card');
+    const advisorInput = document.getElementById('advisor-input-text');
+    if (advisorCard) {
+      advisorCard.classList.add('highlight-glow');
+      advisorCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        advisorCard.classList.remove('highlight-glow');
+      }, 4000);
+    }
+    if (advisorInput) {
+      setTimeout(() => advisorInput.focus(), 600);
+    }
+    return;
+  }
+
+  // If selecting a bottom-card panel feature, verify if a farm boundary is active
+  if (!activeFarmId) {
+    // Scroll and pulse highlight the Farms management card to alert the user
+    const farmsCard = document.querySelector('.farms-card');
+    if (farmsCard) {
+      farmsCard.classList.add('highlight-glow');
+      farmsCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        farmsCard.classList.remove('highlight-glow');
+      }, 4000);
+    }
+
+    // Display a beautiful translated instruction toast matching the query
+    const translationKey = `toast-select-farm-${target}`;
+    const msg = window.translate(translationKey) || "Please select or draw a farm first!";
+    showNotification(msg, 'info');
+    return;
+  }
+
+  // Farm is active, scroll to the designated card block
+  let selector = '';
+  if (target === 'weather') {
+    selector = '.weather-card';
+  } else if (target === 'ndvi') {
+    selector = '.vegetation-card';
+  } else if (target === 'yield') {
+    selector = '.benchmark-card';
+  }
+
+  const targetCard = document.querySelector(selector);
+  if (targetCard) {
+    targetCard.classList.add('highlight-glow');
+    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      targetCard.classList.remove('highlight-glow');
+    }, 4000);
+  }
+}
+
+/**
  * Transitions layout states between Home screen and Dashboard map view.
  * Integrates native SPA View Transitions API if supported.
  * @param {string} viewName - 'home' | 'dashboard'
+ * @param {string|null} targetFocus - Target dashboard element to spotlight
  */
-function navigateToView(viewName) {
+function navigateToView(viewName, targetFocus = null) {
   const updateDOM = () => {
     const homeView = document.getElementById('home-view');
     const dashboardView = document.getElementById('dashboard-view');
@@ -756,7 +844,12 @@ function navigateToView(viewName) {
       // Trigger map resize invalidate size to ensure Leaflet renders correctly
       setTimeout(() => {
         invalidateMapSize();
-      }, 80);
+        
+        // Execute premium focus and spotlight highlighting
+        if (targetFocus) {
+          handleSectionFocus(targetFocus);
+        }
+      }, 100);
     }
   };
 
