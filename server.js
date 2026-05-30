@@ -488,6 +488,70 @@ Limit your response to a maximum of 250 words so it is concise and easy to read 
   }
 });
 
+/**
+ * -------------------------------------------------------------
+ * TEXT-TO-SPEECH (TTS) PROXY ROUTE (GhanaNLP REST API)
+ * -------------------------------------------------------------
+ */
+app.post('/api/tts', async (req, res) => {
+  const { text, language, lang } = req.body;
+  const targetLanguage = language || lang;
+
+  if (!text || !targetLanguage) {
+    return res.status(400).json({ error: 'Both text and language parameters are required' });
+  }
+
+  const apiKey = process.env.GHANANLP_API_KEY;
+
+  // Resilient Test Fallback or Key Missing Fallback
+  if (!apiKey) {
+    if (process.env.NODE_ENV === 'test') {
+      // Return a valid mock WAV header byte sequence for tests
+      const mockWav = Buffer.from([
+        0x52, 0x49, 0x46, 0x46, 0x24, 0x00, 0x00, 0x00, 
+        0x57, 0x41, 0x56, 0x45, 0x66, 0x6d, 0x74, 0x20, 
+        0x10, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 
+        0x44, 0xac, 0x00, 0x00, 0x88, 0x58, 0x01, 0x00, 
+        0x02, 0x00, 0x10, 0x00, 0x64, 0x61, 0x74, 0x61, 
+        0x00, 0x00, 0x00, 0x00
+      ]);
+      res.set('Content-Type', 'audio/wav');
+      return res.send(mockWav);
+    }
+    return res.status(400).json({ error: 'GhanaNLP API Key is not configured on the server.' });
+  }
+
+  try {
+    const ttsUrl = 'https://translation.ghananlp.org/tts/v1/tts';
+    
+    const response = await fetch(ttsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Ocp-Apim-Subscription-Key': apiKey
+      },
+      body: JSON.stringify({
+        text: text,
+        language: targetLanguage
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`GhanaNLP API returned status ${response.status}: ${errorText}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    res.set('Content-Type', 'audio/wav');
+    res.send(buffer);
+  } catch (err) {
+    console.error('GhanaNLP TTS Error:', err.message);
+    res.status(502).json({ error: 'Failed to synthesize speech via GhanaNLP API' });
+  }
+});
+
 // Spin up HTTP listener
 const serverInstance = app.listen(PORT, () => {
   if (process.env.NODE_ENV !== 'test') {

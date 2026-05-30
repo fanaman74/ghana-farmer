@@ -1049,10 +1049,14 @@ function populateVoices() {
   });
 }
 
+// Global state tracker for external audio instances (like GhanaNLP wav synthesis)
+let activeTtsAudio = null;
+
 /**
  * Text-to-Speech (TTS) Speak / Stop toggle function.
+ * Integrates premium GhanaNLP speech APIs for local Twi/Ewe, falling back to browser-native synthesis.
  */
-function speakMessage(btnElement) {
+async function speakMessage(btnElement) {
   const msgContainer = btnElement.closest('.chat-message');
   if (!msgContainer) return;
   const p = msgContainer.querySelector('p');
@@ -1063,6 +1067,10 @@ function speakMessage(btnElement) {
   // If clicking an already speaking button, cancel speech and reset
   if (btnElement.classList.contains('speaking')) {
     window.speechSynthesis.cancel();
+    if (activeTtsAudio) {
+      activeTtsAudio.pause();
+      activeTtsAudio = null;
+    }
     btnElement.classList.remove('speaking');
     btnElement.innerHTML = '🔊';
     return;
@@ -1070,6 +1078,10 @@ function speakMessage(btnElement) {
   
   // Cancel any ongoing speech
   window.speechSynthesis.cancel();
+  if (activeTtsAudio) {
+    activeTtsAudio.pause();
+    activeTtsAudio = null;
+  }
   
   // Reset all other speaking buttons
   document.querySelectorAll('.chat-speech-btn').forEach(btn => {
@@ -1077,6 +1089,64 @@ function speakMessage(btnElement) {
     btn.innerHTML = '🔊';
   });
   
+  // Detect active language and check if it requires GhanaNLP (Twi or Ewe)
+  const activeLang = window.currentLanguage || 'en';
+  
+  if (activeLang === 'ak' || activeLang === 'ee') {
+    // Map local codes to GhanaNLP codes: Akan/Twi -> tw, Ewe -> ee
+    const mappedLang = activeLang === 'ak' ? 'tw' : 'ee';
+    
+    btnElement.classList.add('speaking');
+    btnElement.innerHTML = '⏳'; // Thinking indicator while streaming
+    
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language: mappedLang })
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        
+        activeTtsAudio = new Audio(audioUrl);
+        
+        activeTtsAudio.onplay = () => {
+          btnElement.classList.add('speaking');
+          btnElement.innerHTML = '⏸️';
+        };
+        
+        activeTtsAudio.onended = () => {
+          btnElement.classList.remove('speaking');
+          btnElement.innerHTML = '🔊';
+          activeTtsAudio = null;
+        };
+        
+        activeTtsAudio.onerror = () => {
+          activeTtsAudio = null;
+          fallbackToNativeSpeech(text, btnElement);
+        };
+        
+        await activeTtsAudio.play();
+      } else {
+        // Fallback on HTTP errors (e.g. key not configured)
+        fallbackToNativeSpeech(text, btnElement);
+      }
+    } catch (err) {
+      // Fallback on network errors
+      fallbackToNativeSpeech(text, btnElement);
+    }
+  } else {
+    // English default fallback to native SpeechSynthesis
+    fallbackToNativeSpeech(text, btnElement);
+  }
+}
+
+/**
+ * Fallback controller invoking browser-native SpeechSynthesisUtterance.
+ */
+function fallbackToNativeSpeech(text, btnElement) {
   const utterance = new SpeechSynthesisUtterance(text);
   
   // Apply selected voice

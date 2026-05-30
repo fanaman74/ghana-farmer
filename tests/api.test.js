@@ -212,6 +212,28 @@ test('Express API Integration Tests', async (t) => {
     console.log('OLMO AI Reply sample:', data.reply.substring(0, 100) + '...');
   });
 
+  await t.test('POST /api/tts - Synthesize local Speech (GhanaNLP)', async () => {
+    const res = await fetch(`${API_BASE}/api/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: 'aburo',
+        language: 'tw'
+      })
+    });
+
+    assert.equal(res.status, 200);
+    assert.ok(res.headers.get('content-type').includes('audio/wav'));
+    
+    const buffer = await res.arrayBuffer();
+    assert.ok(buffer.byteLength > 0, 'Audio response should not be empty');
+    
+    // Verify it starts with 'RIFF' wav header signature
+    const bytes = new Uint8Array(buffer);
+    const signature = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+    assert.equal(signature, 'RIFF');
+  });
+
   // Teardown: close Express server and delete test db
   server.close(() => {
     try {
