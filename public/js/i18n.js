@@ -51,7 +51,21 @@ const TRANSLATIONS = {
     "btn-tab-weather": "🌦️ Weather",
     "btn-tab-ndvi": "🛰️ Crop Health",
     "btn-tab-yield": "📊 Benchmarks",
-    "btn-tab-advisor": "🤖 AI Advisor"
+    "btn-tab-advisor": "🤖 AI Advisor",
+    // Premium Santorini-style Card Keys (English)
+    "lbl-badge-weather-1": "🌦️ Forecast",
+    "lbl-badge-weather-2": "6h Cached",
+    "lbl-badge-ndvi-1": "🛰️ NDVI",
+    "lbl-badge-ndvi-2": "Sentinel Hub",
+    "lbl-badge-yield-1": "📊 FAOSTAT",
+    "lbl-badge-yield-2": "Benchmarks",
+    "lbl-badge-advisor-1": "🤖 OLMO AI",
+    "lbl-badge-advisor-2": "Wise Agent",
+    "btn-label-weather": "Explore now",
+    "btn-label-ndvi": "Explore now",
+    "btn-label-yield": "Explore now",
+    "btn-label-advisor": "Explore now",
+    "lbl-tts-select-voice": "Loading System Speech Voices..."
   },
   ak: { // Akan (Twi)
     "lbl-title": "Ghana Kuafo Akwankyerɛ",
@@ -100,7 +114,21 @@ const TRANSLATIONS = {
     "btn-tab-weather": "🌦️ Wiem Tebea",
     "btn-tab-ndvi": "🛰️ Nnɔbae Yiedie",
     "btn-tab-yield": "📊 Nsenkyerɛnne",
-    "btn-tab-advisor": "🤖 AI Advisor"
+    "btn-tab-advisor": "🤖 AI Advisor",
+    // Premium Santorini-style Card Keys (Akan)
+    "lbl-badge-weather-1": "🌦️ Osu/Wiem",
+    "lbl-badge-weather-2": "Dɔnhwerew 6",
+    "lbl-badge-ndvi-1": "🛰️ NDVI",
+    "lbl-badge-ndvi-2": "Sentinel Hub",
+    "lbl-badge-yield-1": "📊 FAOSTAT",
+    "lbl-badge-yield-2": "Nsɛso",
+    "lbl-badge-advisor-1": "🤖 OLMO AI",
+    "lbl-badge-advisor-2": "Nyansafoɔ",
+    "btn-label-weather": "Hwehwɛ mu",
+    "btn-label-ndvi": "Hwehwɛ mu",
+    "btn-label-yield": "Hwehwɛ mu",
+    "btn-label-advisor": "Hwehwɛ mu",
+    "lbl-tts-select-voice": "Rehwehwɛ Wiem Kasa..."
   },
   ee: { // Ewe
     "lbl-title": "Ghana Agbledela Kpekpeɖeŋu",
@@ -149,7 +177,21 @@ const TRANSLATIONS = {
     "btn-tab-weather": "🌦️ Ya me ƒe Nɔnɔme",
     "btn-tab-ndvi": "🛰️ Nuku Lãmesẽ",
     "btn-tab-yield": "📊 Nugblekpɔkpɔ",
-    "btn-tab-advisor": "🤖 AI Advisor"
+    "btn-tab-advisor": "🤖 AI Advisor",
+    // Premium Santorini-style Card Keys (Ewe)
+    "lbl-badge-weather-1": "🌦️ Forecast",
+    "lbl-badge-weather-2": "Gafo 6",
+    "lbl-badge-ndvi-1": "🛰️ NDVI",
+    "lbl-badge-ndvi-2": "Sentinel Hub",
+    "lbl-badge-yield-1": "📊 FAOSTAT",
+    "lbl-badge-yield-2": "Sɔsɔ",
+    "lbl-badge-advisor-1": "🤖 OLMO AI",
+    "lbl-badge-advisor-2": "Agbleɖaŋuɖola",
+    "btn-label-weather": "Dii tsitotsito",
+    "btn-label-ndvi": "Dii tsitotsito",
+    "btn-label-yield": "Dii tsitotsito",
+    "btn-label-advisor": "Dii tsitotsito",
+    "lbl-tts-select-voice": "Le Gbe Lalam..."
   }
 };
 

@@ -2,7 +2,7 @@
  * Ghana Farmer Support Application - PWA Service Worker (Cache & Offline Support)
  */
 
-const CACHE_NAME = 'ghana-farmer-shell-v17';
+const CACHE_NAME = 'ghana-farmer-shell-v18';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

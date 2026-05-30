@@ -439,6 +439,11 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   color: var(--text-dark) !important;
 }
 
+/* Custom Orange Color for Map Drawing Toolbar Icons */
+.leaflet-buttons-control-button .leaflet-pm-icon {
+  filter: brightness(0) saturate(100%) invert(64%) sepia(87%) saturate(1636%) hue-rotate(352deg) brightness(101%) contrast(95%) !important;
+}
+
 .leaflet-popup-content-wrapper {
   background: var(--bg-card) !important;
   color: var(--text-main) !important;
@@ -659,6 +664,101 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   border: 1px solid rgba(16, 185, 129, 0.2);
   color: var(--text-main);
   border-left-width: 3px;
+  position: relative;
+  padding-right: 38px; /* leave space for the speak button on the right */
+}
+
+/* Advisor TTS Toolbar & Speech Synthesis Elements */
+.advisor-tts-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+
+.tts-icon {
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.tts-select {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 12px;
+  padding: 2px 4px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8f98' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 12px;
+  padding-right: 20px;
+}
+
+.tts-select:focus {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.tts-select option {
+  background: #15181b;
+  color: var(--text-main);
+}
+
+.chat-speech-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glow);
+  color: var(--text-muted);
+  font-size: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+  line-height: 1;
+}
+
+.chat-speech-btn:hover {
+  background: rgba(94, 106, 210, 0.15);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
+  transform: scale(1.05);
+}
+
+/* Active speaking state with pulse glow */
+.chat-speech-btn.speaking {
+  background: var(--color-primary);
+  color: var(--text-dark) !important;
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 0 12px var(--color-primary);
+  animation: tts-speaking-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes tts-speaking-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.85;
+  }
 }
 
 .chat-message.user {
@@ -763,14 +863,10 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
 /* View transitions & wrappers */
 .home-view-container {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* Aligns hero section to the top */
-  min-height: calc(100vh - var(--header-height));
-  background: transparent; /* transparent to show the full-bleed video backdrop */
-  overflow-y: auto;
-  padding: 40px 24px 60px 24px; /* Crisp top alignment with comfortable bottom scroll room */
+  display: block; /* Natural block-level scrolling flow */
+  height: calc(100vh - var(--header-height)); /* Strictly bound to header viewport */
+  overflow-y: auto; /* Handle natural vertical scroll */
+  background-color: var(--bg-app); /* Marketing dark black canvas */
   z-index: 1;
 }
 
@@ -812,13 +908,7 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   }
 }
 
-/* Hero Content Panel */
-.hero-section {
-  text-align: center;
-  max-width: 800px;
-  margin-bottom: 56px;
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
+/* Hero Content Panel styled under .hero-content */
 
 .hero-logo-shimmer {
   font-size: 72px;
@@ -827,24 +917,7 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   animation: shimmer-pulse 4s infinite ease-in-out;
 }
 
-.hero-section h1 {
-  font-size: 52px;
-  font-weight: 700;
-  letter-spacing: -1.8px;
-  background: linear-gradient(135deg, #ffffff 40%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 18px;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
-}
 
-.hero-section p {
-  font-size: 19px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  max-width: 680px;
-  margin: 0 auto;
-}
 
 @keyframes shimmer-pulse {
   0%, 100% {
@@ -881,74 +954,121 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
 
 .feature-nav-card {
   position: relative;
-  background: rgba(22, 34, 28, 0.45);
+  background: rgba(15, 16, 17, 0.95);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-glow);
-  border-radius: var(--radius-lg);
-  padding: 36px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 32px; /* Premium highly rounded curves matching Santorini/Swiss card */
+  padding: 0; /* Full bleed image at top */
   box-shadow: var(--shadow);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  overflow: hidden;
-}
-
-.feature-nav-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 1;
+  min-height: 480px; /* portrait card ratio */
+  overflow: hidden; /* clip contents beautifully */
 }
 
 .feature-nav-card:hover {
-  transform: translateY(-10px);
-  background: rgba(30, 48, 38, 0.65);
-  border-color: var(--border-glow-hover);
-  box-shadow: 0 20px 40px 0 rgba(16, 185, 129, 0.15);
+  transform: translateY(-8px);
+  background: rgba(22, 23, 24, 0.98);
+  border-color: rgba(94, 106, 210, 0.25);
+  box-shadow: 0 20px 40px 0 rgba(94, 106, 210, 0.12);
 }
 
-.feature-nav-icon {
-  font-size: 44px;
-  margin-bottom: 24px;
-  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.feature-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
 }
 
-.feature-nav-card:hover .feature-nav-icon {
-  transform: scale(1.2) rotate(8deg);
+.feature-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.feature-nav-card h3 {
-  font-size: 21px;
-  font-weight: 600;
-  margin-bottom: 14px;
-  color: #ffffff;
+.feature-nav-card:hover .feature-card-img {
+  transform: scale(1.08); /* Premium zoom effect */
 }
 
-.feature-nav-card p {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 20px;
+.feature-card-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  /* Blends image perfectly into dark solid text section */
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 16, 17, 0.95) 90%, rgba(15, 16, 17, 1) 100%);
+}
+
+.feature-card-info {
+  padding: 24px 24px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   flex-grow: 1;
 }
 
-.feature-nav-action-indicator {
+.feature-nav-card h3 {
   font-size: 20px;
-  color: var(--color-accent);
-  align-self: flex-end;
-  transition: var(--transition);
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
 }
 
-.feature-nav-card:hover .feature-nav-action-indicator {
-  transform: translateX(8px);
-  color: #ffffff;
+.feature-nav-card p {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 8px;
+  flex-grow: 1;
+}
+
+.feature-card-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.card-badge {
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.card-badge.highlight {
+  background: rgba(94, 106, 210, 0.15);
+  color: #a8b1ff;
+  border: 1px solid rgba(94, 106, 210, 0.3);
+}
+
+.feature-card-action-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 50px; /* pill shape matching Santorini Villa button */
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: none;
+  background: #ffffff;
+  color: #08090a;
+  transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card-action-btn:hover {
+  background: var(--color-primary-hover);
+  color: #08090a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(94, 106, 210, 0.35);
 }
 
 /* Absolute Location Search Bar inside Map Panel */
@@ -1268,41 +1388,107 @@ h1, h2, h3, h4, .btn, .map-tab-btn, .lang-btn, .farm-item-name, .farm-prop-label
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    180deg, 
-    rgba(8, 9, 10, 0.65) 0%, 
-    rgba(8, 9, 10, 0.45) 50%, 
-    rgba(8, 9, 10, 0.85) 100%
-  );
-  backdrop-filter: blur(2px); /* elegant glass blur overlay */
+  /* Premium radial + linear gradient combo to darken behind the text and increase contrast */
+  background: radial-gradient(circle at center, rgba(8, 9, 10, 0.1) 0%, rgba(8, 9, 10, 0.8) 100%),
+              linear-gradient(180deg, rgba(8, 9, 10, 0.7) 0%, rgba(8, 9, 10, 0.55) 50%, rgba(8, 9, 10, 0.95) 100%);
+  backdrop-filter: blur(3px); /* slightly softer blur to enhance text legibility */
   z-index: -1;
 }
 
-/* Re-center hero content */
+/* Dedicated Full Viewport Hero Cover Segment */
 .hero-section {
-  text-align: center;
-  max-width: 800px;
-  margin-bottom: 40px;
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.hero-section p {
-  font-size: 19px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  max-width: 680px;
-  margin: 0 auto;
-}
-
-/* Features Section with Resources Heading */
-.features-section {
-  width: 100%;
-  max-width: 1200px;
-  margin-top: 10px;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  justify-content: center;
+  height: 70vh; /* Shrunk to allow feature cards below hero fold */
+  width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-section h1 {
+  font-family: 'Erica One', cursive, sans-serif;
+  font-size: 44px; /* Shrunk from 58px for better layout balance */
+  font-weight: 400; /* Erica One has only weight 400, but it is naturally extremely thick/bold */
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff; /* ensure override of any transparent setting */
+  letter-spacing: 0.5px;
+  margin-bottom: 18px;
+  /* Strong high-contrast shadows to make the title pop against bright sunset background */
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hero-content p {
+  font-size: 19px;
+  /* High contrast white-indigo hue for maximum readability on sunset skies */
+  color: rgba(247, 248, 248, 0.95);
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0 auto;
+  /* Heavy diffuse shadow for extreme contrast */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Animated Scroll Indicator */
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  animation: bounce 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.scroll-arrow {
+  font-size: 16px;
+  color: var(--color-accent);
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate(-50%, 0);
+  }
+  40% {
+    transform: translate(-50%, -6px);
+  }
+  60% {
+    transform: translate(-50%, -3px);
+  }
+}
+
+/* Features Section - Clean solid black canvas below the fold */
+.features-section {
+  position: relative;
+  background-color: var(--bg-app); /* Clear void black background */
+  width: 100%;
+  padding: 80px 24px 100px 24px; /* Spacious separation padding */
+  border-top: 1px solid var(--border-glow); /* Transparent hairline divider */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  box-sizing: border-box;
   z-index: 2;
 }
 

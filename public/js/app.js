@@ -122,6 +122,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize UI language
   window.setLanguage('en');
 
+  // Initialize TTS Speech Synthesis
+  if ('speechSynthesis' in window) {
+    populateVoices();
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+  }
+
   // Initialize Map
   initMap('map', handlePolygonDrawn);
 
@@ -667,13 +673,19 @@ async function sendAdvisorMessage(messageText) {
       // Append Bot response
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
-      botMsg.innerHTML = `<p>${data.reply}</p>`;
+      botMsg.innerHTML = `
+        <p>${data.reply}</p>
+        <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
+      `;
       chatHistory.appendChild(botMsg);
     } else {
       const err = await res.json();
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
-      botMsg.innerHTML = `<p style="color: var(--color-danger)">Error: ${err.error || 'Failed to fetch AI advice.'}</p>`;
+      botMsg.innerHTML = `
+        <p style="color: var(--color-danger)">Error: ${err.error || 'Failed to fetch AI advice.'}</p>
+        <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
+      `;
       chatHistory.appendChild(botMsg);
     }
   } catch (err) {
@@ -682,7 +694,10 @@ async function sendAdvisorMessage(messageText) {
     }
     const botMsg = document.createElement('div');
     botMsg.className = 'chat-message bot';
-    botMsg.innerHTML = `<p style="color: var(--color-danger)">Offline: Unable to contact AI Advisor.</p>`;
+    botMsg.innerHTML = `
+      <p style="color: var(--color-danger)">Offline: Unable to contact AI Advisor.</p>
+      <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
+    `;
     chatHistory.appendChild(botMsg);
   } finally {
     inputEl.disabled = false;
@@ -992,3 +1007,107 @@ document.getElementById('map-search-input').addEventListener('keyup', (e) => {
 
 window.hideSuggestions = hideSuggestions;
 window.selectSuggestion = selectSuggestion;
+
+/**
+ * Populates the Text-to-Speech (TTS) voice selection dropdown.
+ */
+function populateVoices() {
+  const voiceSelect = document.getElementById('tts-voice-select');
+  if (!voiceSelect) return;
+  
+  const voices = window.speechSynthesis.getVoices();
+  voiceSelect.innerHTML = '';
+  
+  if (voices.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = window.translate('lbl-tts-select-voice') || 'Loading System Speech Voices...';
+    voiceSelect.appendChild(opt);
+    return;
+  }
+  
+  // Sort English voices first, then sort by language/name
+  const sortedVoices = [...voices].sort((a, b) => {
+    const aIsEn = a.lang.startsWith('en');
+    const bIsEn = b.lang.startsWith('en');
+    if (aIsEn && !bIsEn) return -1;
+    if (!aIsEn && bIsEn) return 1;
+    return a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
+  });
+  
+  sortedVoices.forEach(voice => {
+    const option = document.createElement('option');
+    option.value = voice.name;
+    option.textContent = `${voice.name} (${voice.lang})`;
+    
+    // Auto-select standard English or Google voices by default
+    if (voice.lang.startsWith('en') && (voice.name.includes('Google') || voice.name.includes('Natural')) && !voiceSelect.value) {
+      option.selected = true;
+    }
+    
+    voiceSelect.appendChild(option);
+  });
+}
+
+/**
+ * Text-to-Speech (TTS) Speak / Stop toggle function.
+ */
+function speakMessage(btnElement) {
+  const msgContainer = btnElement.closest('.chat-message');
+  if (!msgContainer) return;
+  const p = msgContainer.querySelector('p');
+  if (!p) return;
+  
+  const text = p.textContent;
+  
+  // If clicking an already speaking button, cancel speech and reset
+  if (btnElement.classList.contains('speaking')) {
+    window.speechSynthesis.cancel();
+    btnElement.classList.remove('speaking');
+    btnElement.innerHTML = '🔊';
+    return;
+  }
+  
+  // Cancel any ongoing speech
+  window.speechSynthesis.cancel();
+  
+  // Reset all other speaking buttons
+  document.querySelectorAll('.chat-speech-btn').forEach(btn => {
+    btn.classList.remove('speaking');
+    btn.innerHTML = '🔊';
+  });
+  
+  const utterance = new SpeechSynthesisUtterance(text);
+  
+  // Apply selected voice
+  const voiceSelect = document.getElementById('tts-voice-select');
+  if (voiceSelect && voiceSelect.value) {
+    const selectedVoiceName = voiceSelect.value;
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.name === selectedVoiceName);
+    if (voice) {
+      utterance.voice = voice;
+    }
+  }
+  
+  // Interactive UI indicators (start / end / error states)
+  utterance.onstart = () => {
+    btnElement.classList.add('speaking');
+    btnElement.innerHTML = '⏸️'; // Play -> Stop/Pause indicator
+  };
+  
+  utterance.onend = () => {
+    btnElement.classList.remove('speaking');
+    btnElement.innerHTML = '🔊';
+  };
+  
+  utterance.onerror = () => {
+    btnElement.classList.remove('speaking');
+    btnElement.innerHTML = '🔊';
+  };
+  
+  window.speechSynthesis.speak(utterance);
+}
+
+window.populateVoices = populateVoices;
+window.speakMessage = speakMessage;

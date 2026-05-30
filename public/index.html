@@ -8,7 +8,7 @@
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Erica+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -55,52 +55,96 @@
 
     <!-- Home View (Animated Hero & Feature Grid) -->
     <main id="home-view" class="home-view-container">
-      <!-- Full-Screen Cinematic Background Image -->
-      <div class="hero-image-container">
-        <img src="images/hero-bg.png" class="hero-bg-image" alt="Women village farmers">
-        <div class="hero-image-overlay"></div>
-      </div>
-      
+      <!-- Hero Section (Full Viewport Height) -->
       <section class="hero-section">
-        <div class="hero-logo-shimmer">🌱</div>
-        <h1 id="lbl-hero-title">Empowering Ghanaian Agriculture</h1>
-        <p id="lbl-hero-subtitle">Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.</p>
+        <!-- Full-Screen Cinematic Background Image -->
+        <div class="hero-image-container">
+          <img src="images/hero-bg.png" class="hero-bg-image" alt="Women village farmers">
+          <div class="hero-image-overlay"></div>
+        </div>
+        
+        <div class="hero-content">
+          <h1 id="lbl-hero-title">Empowering Ghanaian Agriculture</h1>
+          <p id="lbl-hero-subtitle">Interactive mapping, satellite crop tracking, climate analytics, and AI advisor localized in English, Akan (Twi), and Ewe.</p>
+        </div>
+
+        <!-- Subtle Animated Scroll Down Indicator -->
+        <div class="hero-scroll-indicator">
+          <span class="scroll-text">Scroll to Explore</span>
+          <span class="scroll-arrow">↓</span>
+        </div>
       </section>
 
       <section class="features-section">
         <h2 id="lbl-resources-title" class="section-title">Our Resources</h2>
         <div class="features-grid">
-        <!-- Weather Card -->
-        <div class="feature-nav-card" id="btn-go-weather">
-          <div class="feature-nav-icon">🌦️</div>
-          <h3 id="lbl-feature-weather-title">Weather & Soil Health</h3>
-          <p id="lbl-feature-weather-desc">6-hour cached forecasts, soil moisture, and transpiration curves.</p>
-          <span class="feature-nav-action-indicator">➔</span>
-        </div>
+          <!-- Weather Card -->
+          <div class="feature-nav-card" id="btn-go-weather">
+            <div class="feature-card-image-wrapper">
+              <img src="images/card-weather.png" class="feature-card-img" alt="Weather & Soil">
+              <div class="feature-card-image-overlay"></div>
+            </div>
+            <div class="feature-card-info">
+              <h3 id="lbl-feature-weather-title">Weather & Soil Health</h3>
+              <p id="lbl-feature-weather-desc">6-hour cached forecasts, soil moisture, and transpiration curves.</p>
+              <div class="feature-card-badges">
+                <span class="card-badge highlight" id="lbl-badge-weather-1">🌦️ Forecast</span>
+                <span class="card-badge" id="lbl-badge-weather-2">6h Cached</span>
+              </div>
+              <button class="feature-card-action-btn" id="btn-label-weather">Explore now</button>
+            </div>
+          </div>
 
-        <!-- Crop Health Card -->
-        <div class="feature-nav-card" id="btn-go-ndvi">
-          <div class="feature-nav-icon">🛰️</div>
-          <h3 id="lbl-feature-ndvi-title">Satellite Crop Health</h3>
-          <p id="lbl-feature-ndvi-desc">Sentinel Hub NDVI vegetative indices and seasonal curves.</p>
-          <span class="feature-nav-action-indicator">➔</span>
-        </div>
+          <!-- Crop Health Card -->
+          <div class="feature-nav-card" id="btn-go-ndvi">
+            <div class="feature-card-image-wrapper">
+              <img src="images/card-satellite.png" class="feature-card-img" alt="Crop Health">
+              <div class="feature-card-image-overlay"></div>
+            </div>
+            <div class="feature-card-info">
+              <h3 id="lbl-feature-ndvi-title">Satellite Crop Health</h3>
+              <p id="lbl-feature-ndvi-desc">Sentinel Hub NDVI vegetative indices and seasonal curves.</p>
+              <div class="feature-card-badges">
+                <span class="card-badge highlight" id="lbl-badge-ndvi-1">🛰️ NDVI</span>
+                <span class="card-badge" id="lbl-badge-ndvi-2">Sentinel Hub</span>
+              </div>
+              <button class="feature-card-action-btn" id="btn-label-ndvi">Explore now</button>
+            </div>
+          </div>
 
-        <!-- Yield Card -->
-        <div class="feature-nav-card" id="btn-go-yield">
-          <div class="feature-nav-icon">📊</div>
-          <h3 id="lbl-feature-faostat-title">National Yield Benchmarks</h3>
-          <p id="lbl-feature-faostat-desc">FAOSTAT crop statistics and local yield comparisons.</p>
-          <span class="feature-nav-action-indicator">➔</span>
-        </div>
+          <!-- Yield Card -->
+          <div class="feature-nav-card" id="btn-go-yield">
+            <div class="feature-card-image-wrapper">
+              <img src="images/card-yield.png" class="feature-card-img" alt="Yield Benchmarks">
+              <div class="feature-card-image-overlay"></div>
+            </div>
+            <div class="feature-card-info">
+              <h3 id="lbl-feature-faostat-title">National Yield Benchmarks</h3>
+              <p id="lbl-feature-faostat-desc">FAOSTAT crop statistics and local yield comparisons.</p>
+              <div class="feature-card-badges">
+                <span class="card-badge highlight" id="lbl-badge-yield-1">📊 FAOSTAT</span>
+                <span class="card-badge" id="lbl-badge-yield-2">Benchmarks</span>
+              </div>
+              <button class="feature-card-action-btn" id="btn-label-yield">Explore now</button>
+            </div>
+          </div>
 
-        <!-- Advisor Card -->
-        <div class="feature-nav-card" id="btn-go-advisor">
-          <div class="feature-nav-icon">🤖</div>
-          <h3 id="lbl-feature-advisor-title">AI Farm Advisor</h3>
-          <p id="lbl-feature-advisor-desc">Instant agri advice in English, Twi, and Ewe with farm context.</p>
-          <span class="feature-nav-action-indicator">➔</span>
-        </div>
+          <!-- Advisor Card -->
+          <div class="feature-nav-card" id="btn-go-advisor">
+            <div class="feature-card-image-wrapper">
+              <img src="images/card-advisor.png" class="feature-card-img" alt="AI Advisor">
+              <div class="feature-card-image-overlay"></div>
+            </div>
+            <div class="feature-card-info">
+              <h3 id="lbl-feature-advisor-title">AI Farm Advisor</h3>
+              <p id="lbl-feature-advisor-desc">Instant agri advice in English, Twi, and Ewe with farm context.</p>
+              <div class="feature-card-badges">
+                <span class="card-badge highlight" id="lbl-badge-advisor-1">🤖 OLMO AI</span>
+                <span class="card-badge" id="lbl-badge-advisor-2">Wise Agent</span>
+              </div>
+              <button class="feature-card-action-btn" id="btn-label-advisor">Explore now</button>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -236,9 +280,18 @@
         <section class="card advisor-card scrollable persistent-advisor">
           <h2 id="lbl-olmo-advisor">OLMO AI Advisor</h2>
           <div class="advisor-chat-container">
+            <!-- Text-to-Speech (TTS) Voice Selector Bar -->
+            <div class="advisor-tts-bar">
+              <span class="tts-icon">🔊</span>
+              <select id="tts-voice-select" class="form-select tts-select">
+                <option value="" id="lbl-tts-select-voice">Loading TTS Voices...</option>
+              </select>
+            </div>
+            
             <div id="advisor-chat-history" class="chat-history">
               <div class="chat-message bot">
                 <p id="lbl-advisor-welcome">Welcome! I am OLMO, your wise agricultural advisor. Ask me anything about your crops, soils, or seasons!</p>
+                <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
               </div>
             </div>
             
