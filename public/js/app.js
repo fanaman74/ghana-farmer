@@ -45,6 +45,7 @@ let drawnLayer = null;
 
 let users = [];
 let farms = [];
+let activeTtsAudio = null;
 
 // Geodesic Polygon Area Calculation (Approximation in Hectares)
 function calculatePolygonArea(geometryStr) {
@@ -121,12 +122,7 @@ function calculatePolygonCentroid(geometryStr) {
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize UI language
   window.setLanguage('en');
-
-  // Initialize TTS Speech Synthesis
-  if ('speechSynthesis' in window) {
-    populateVoices();
-    window.speechSynthesis.onvoiceschanged = populateVoices;
-  }
+  toggleTtsButtons('en');
 
   // Initialize Map
   initMap('map', handlePolygonDrawn);
@@ -157,6 +153,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Re-trigger FAOSTAT render with updated labels
     const activeCrop = document.getElementById('crop-select').value;
     loadFAOSTATBenchmarks(activeCrop);
+
+    // Toggle speech button visibility depending on active language
+    toggleTtsButtons(e.detail.language);
   });
 
   // Register online/offline browser state listeners
@@ -671,20 +670,22 @@ async function sendAdvisorMessage(messageText) {
       const data = await res.json();
       
       // Append Bot response
+      const isEnglish = (window.currentLanguage === 'en');
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       botMsg.innerHTML = `
         <p>${data.reply}</p>
-        <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
+        ${isEnglish ? '' : '<button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>'}
       `;
       chatHistory.appendChild(botMsg);
     } else {
       const err = await res.json();
+      const isEnglish = (window.currentLanguage === 'en');
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       botMsg.innerHTML = `
         <p style="color: var(--color-danger)">Error: ${err.error || 'Failed to fetch AI advice.'}</p>
-        <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
+        ${isEnglish ? '' : '<button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>'}
       `;
       chatHistory.appendChild(botMsg);
     }
@@ -692,11 +693,12 @@ async function sendAdvisorMessage(messageText) {
     if (thinkingMsg.parentNode) {
       chatHistory.removeChild(thinkingMsg);
     }
+    const isEnglish = (window.currentLanguage === 'en');
     const botMsg = document.createElement('div');
     botMsg.className = 'chat-message bot';
     botMsg.innerHTML = `
       <p style="color: var(--color-danger)">Offline: Unable to contact AI Advisor.</p>
-      <button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>
+      ${isEnglish ? '' : '<button class="chat-speech-btn" onclick="speakMessage(this)" title="Speak response">🔊</button>'}
     `;
     chatHistory.appendChild(botMsg);
   } finally {
@@ -1009,52 +1011,8 @@ window.hideSuggestions = hideSuggestions;
 window.selectSuggestion = selectSuggestion;
 
 /**
- * Populates the Text-to-Speech (TTS) voice selection dropdown.
- */
-function populateVoices() {
-  const voiceSelect = document.getElementById('tts-voice-select');
-  if (!voiceSelect) return;
-  
-  const voices = window.speechSynthesis.getVoices();
-  voiceSelect.innerHTML = '';
-  
-  if (voices.length === 0) {
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = window.translate('lbl-tts-select-voice') || 'Loading System Speech Voices...';
-    voiceSelect.appendChild(opt);
-    return;
-  }
-  
-  // Sort English voices first, then sort by language/name
-  const sortedVoices = [...voices].sort((a, b) => {
-    const aIsEn = a.lang.startsWith('en');
-    const bIsEn = b.lang.startsWith('en');
-    if (aIsEn && !bIsEn) return -1;
-    if (!aIsEn && bIsEn) return 1;
-    return a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
-  });
-  
-  sortedVoices.forEach(voice => {
-    const option = document.createElement('option');
-    option.value = voice.name;
-    option.textContent = `${voice.name} (${voice.lang})`;
-    
-    // Auto-select standard English or Google voices by default
-    if (voice.lang.startsWith('en') && (voice.name.includes('Google') || voice.name.includes('Natural')) && !voiceSelect.value) {
-      option.selected = true;
-    }
-    
-    voiceSelect.appendChild(option);
-  });
-}
-
-// Global state tracker for external audio instances (like GhanaNLP wav synthesis)
-let activeTtsAudio = null;
-
-/**
  * Text-to-Speech (TTS) Speak / Stop toggle function.
- * Integrates premium GhanaNLP speech APIs for local Twi/Ewe, falling back to browser-native synthesis.
+ * Integrates premium GhanaNLP speech APIs for local Twi/Ewe.
  */
 async function speakMessage(btnElement) {
   const msgContainer = btnElement.closest('.chat-message');
@@ -1066,7 +1024,6 @@ async function speakMessage(btnElement) {
   
   // If clicking an already speaking button, cancel speech and reset
   if (btnElement.classList.contains('speaking')) {
-    window.speechSynthesis.cancel();
     if (activeTtsAudio) {
       activeTtsAudio.pause();
       activeTtsAudio = null;
@@ -1077,7 +1034,6 @@ async function speakMessage(btnElement) {
   }
   
   // Cancel any ongoing speech
-  window.speechSynthesis.cancel();
   if (activeTtsAudio) {
     activeTtsAudio.pause();
     activeTtsAudio = null;
@@ -1124,60 +1080,37 @@ async function speakMessage(btnElement) {
         };
         
         activeTtsAudio.onerror = () => {
+          btnElement.classList.remove('speaking');
+          btnElement.innerHTML = '🔊';
           activeTtsAudio = null;
-          fallbackToNativeSpeech(text, btnElement);
         };
         
         await activeTtsAudio.play();
       } else {
-        // Fallback on HTTP errors (e.g. key not configured)
-        fallbackToNativeSpeech(text, btnElement);
+        btnElement.classList.remove('speaking');
+        btnElement.innerHTML = '🔊';
       }
     } catch (err) {
-      // Fallback on network errors
-      fallbackToNativeSpeech(text, btnElement);
+      btnElement.classList.remove('speaking');
+      btnElement.innerHTML = '🔊';
     }
-  } else {
-    // English default fallback to native SpeechSynthesis
-    fallbackToNativeSpeech(text, btnElement);
   }
 }
 
 /**
- * Fallback controller invoking browser-native SpeechSynthesisUtterance.
+ * Toggles visibility of all chat speech buttons depending on language.
+ * Speech synthesis is restricted to premium local languages (Twi, Ewe) supported by GhanaNLP.
  */
-function fallbackToNativeSpeech(text, btnElement) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  
-  // Apply selected voice
-  const voiceSelect = document.getElementById('tts-voice-select');
-  if (voiceSelect && voiceSelect.value) {
-    const selectedVoiceName = voiceSelect.value;
-    const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(v => v.name === selectedVoiceName);
-    if (voice) {
-      utterance.voice = voice;
+function toggleTtsButtons(lang) {
+  const isEnglish = (lang === 'en');
+  document.querySelectorAll('.chat-speech-btn').forEach(btn => {
+    if (isEnglish) {
+      btn.classList.add('hidden');
+    } else {
+      btn.classList.remove('hidden');
     }
-  }
-  
-  // Interactive UI indicators (start / end / error states)
-  utterance.onstart = () => {
-    btnElement.classList.add('speaking');
-    btnElement.innerHTML = '⏸️'; // Play -> Stop/Pause indicator
-  };
-  
-  utterance.onend = () => {
-    btnElement.classList.remove('speaking');
-    btnElement.innerHTML = '🔊';
-  };
-  
-  utterance.onerror = () => {
-    btnElement.classList.remove('speaking');
-    btnElement.innerHTML = '🔊';
-  };
-  
-  window.speechSynthesis.speak(utterance);
+  });
 }
 
-window.populateVoices = populateVoices;
 window.speakMessage = speakMessage;
+window.toggleTtsButtons = toggleTtsButtons;
